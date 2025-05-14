@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,9 +13,7 @@
         android:src="@drawable/eng"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView_logoRays"
@@ -34,9 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginRight="30dp"
         android:alpha="1"
         android:gravity="center"
         android:orientation="vertical"
@@ -52,6 +47,18 @@
             android:textColor="@color/textHeadline"
             android:textSize="20sp" />
 
+        <EditText
+            android:id="@+id/editTextUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/login_edittext_bg"
+            android:drawableStart="@drawable/ic_baseline_person_24"
+            android:drawablePadding="16dp"
+            android:hint="Tên người dùng"
+            android:inputType="text"
+            android:padding="16dp"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/editTextEmail"
@@ -60,13 +67,11 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/login_edittext_bg"
             android:drawableStart="@drawable/ic_baseline_email_24"
-            android:drawableLeft="@drawable/ic_baseline_email_24"
             android:drawablePadding="16dp"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:padding="16dp"
             android:textSize="14sp" />
-
 
         <EditText
             android:id="@+id/editTextPassword"
@@ -75,7 +80,6 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/login_edittext_bg"
             android:drawableStart="@drawable/ic_lock"
-            android:drawableLeft="@drawable/ic_lock"
             android:drawablePadding="16dp"
             android:hint="Password"
             android:inputType="textPassword"
@@ -89,7 +93,6 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/login_edittext_bg"
             android:drawableStart="@drawable/ic_baseline_lock_clock_24"
-            android:drawableLeft="@drawable/ic_baseline_lock_clock_24"
             android:drawablePadding="16dp"
             android:hint="Xác nhận lại Password"
             android:inputType="textPassword"
@@ -107,7 +110,48 @@
             android:textColor="@color/white"
             app:backgroundTint="#5C6BC0" />
 
+        <LinearLayout
+            android:id="@+id/otpLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/editTextOtp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/login_edittext_bg"
+                android:drawableStart="@drawable/ic_baseline_vpn_key_24"
+                android:drawablePadding="16dp"
+                android:hint="Nhập mã OTP"
+                android:inputType="number"
+                android:padding="16dp"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/buttonVerifyOtp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/login_button_bg"
+                android:backgroundTint="@color/colorBlue"
+                android:text="Xác Minh OTP"
+                android:textColor="@color/white"
+                app:backgroundTint="#5C6BC0" />
+        </LinearLayout>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/linearlayout_inputs"
+        app:layout_constraintBottom_toTopOf="@+id/textView_login"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/textView_login"

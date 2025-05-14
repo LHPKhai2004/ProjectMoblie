@@ -1,11 +1,7 @@
 package com.example.apphoctienganh.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,117 +10,167 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.apphoctienganh.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.apphoctienganh.api.ApiService;
+import com.example.apphoctienganh.api.RetrofitClient;
+import com.example.apphoctienganh.model.LoginRequest;
+import com.example.apphoctienganh.model.LoginResponse;
+
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    TextView textView;
-    EditText editEmail;
-    EditText editPassword;
-    Button btnLogin;
-    private FirebaseAuth mAuth;
-    private boolean isPasswordVisible = false;
-    TextView forgot;
+    private EditText editUsername;
+    private EditText editPassword;
+    private TextView textViewRegister;
+    private Button btnLogin;
+    private TextView textViewForgotPassword;
+    private SharedPreferences sharedPreferences;
+    private static final String PREF_NAME = "UserPrefs";
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_TOKEN = "token";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+
         mapping();
-        signUp();
-        signIn();
-        setForgotPassWord();
+        setupListeners();
+    }
 
+    private void mapping() {
+        editUsername = findViewById(R.id.editTextTaiKhoan);
+        editPassword = findViewById(R.id.editTextMatKhau);
+        textViewRegister = findViewById(R.id.textView_register);
+        btnLogin = findViewById(R.id.buttonDangNhap);
+        textViewForgotPassword = findViewById(R.id.textView_forgotPassword);
     }
-    public void signUp(){
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent  = new Intent(LoginActivity.this,SignUpActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-    }
-    public void signIn(){
 
-        mAuth = FirebaseAuth.getInstance();
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            firebaseSetUp();
-            }
+    private void setupListeners() {
+        // Navigate to SignUpActivity
+        textViewRegister.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+            startActivity(intent);
+            finish();
         });
+
+        // Handle login button click
+        btnLogin.setOnClickListener(v -> loginUser());
+
+        // Show forgot password dialog
+        textViewForgotPassword.setOnClickListener(v -> showForgotPasswordDialog());
     }
-    public void firebaseSetUp(){
-        String email = editEmail.getText().toString();
-        String pass = editPassword.getText().toString();
-        mAuth.signInWithEmailAndPassword(email, pass)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Dang nhap thanh cong", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, LayoutActivity.class);
-                            startActivity(intent);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(getApplicationContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+
+    private void loginUser() {
+        String username = editUsername.getText().toString().trim();
+        String password = editPassword.getText().toString().trim();
+
+        // Validate inputs
+        if (username.isEmpty()) {
+            editUsername.setError("Vui lòng nhập tên người dùng");
+            return;
+        }
+        if (password.isEmpty()) {
+            editPassword.setError("Vui lòng nhập mật khẩu");
+            return;
+        }
+        if (password.length() < 8) {
+            editPassword.setError("Mật khẩu phải có ít nhất 8 ký tự");
+            return;
+        }
+
+        btnLogin.setEnabled(false); // Prevent multiple clicks
+
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+        Call<LoginResponse> call = apiService.loginUser(loginRequest);
+
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                btnLogin.setEnabled(true);
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse loginResponse = response.body();
+                    if (loginResponse.isResult()) {
+                        // Save username and token to SharedPreferences
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(KEY_USERNAME, username);
+                        editor.putString(KEY_TOKEN, loginResponse.getData().getToken());
+                        editor.apply();
+
+                        Toast.makeText(LoginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, LayoutActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, loginResponse.getMessage() != null ? loginResponse.getMessage() : "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    String errorMessage = "Lỗi server (HTTP " + response.code() + ")";
+                    if (response.errorBody() != null) {
+                        try {
+                            errorMessage += ": " + response.errorBody().string();
+                        } catch (IOException e) {
+                            errorMessage += ": Không thể đọc nội dung lỗi";
                         }
                     }
-                });
-    }
-    public void setForgotPassWord(){
-        forgot.setOnClickListener(new View.OnClickListener() {
+                    Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+
             @Override
-            public void onClick(View view) {
-            showForgotPasswordDialog();
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                btnLogin.setEnabled(true);
+                Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
+
     private void showForgotPasswordDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.forgot, null);
+        View dialogView = inflater.inflate(R.layout.activity_forgot, null);
         builder.setView(dialogView);
 
         EditText emailEditText = dialogView.findViewById(R.id.editTextEmail);
-        Button reset = dialogView.findViewById(R.id.buttonResetPassword);
-        reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                String emailAddress = emailEditText.getText().toString();
+        Button resetButton = dialogView.findViewById(R.id.buttonResetPassword);
 
-                auth.sendPasswordResetEmail(emailAddress)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this, "Vui lòng kiểm tra email của bạn", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+        resetButton.setOnClickListener(v -> {
+            String email = emailEditText.getText().toString().trim();
+            if (email.isEmpty()) {
+                emailEditText.setError("Vui lòng nhập email");
+                return;
             }
-        });
-        builder.setNegativeButton("Hủy Bỏ", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
+            if (!isValidEmail(email)) {
+                emailEditText.setError("Email không đúng định dạng");
+                return;
             }
+
+            // Placeholder for password reset API call
+            // Example: Call apiService.resetPassword(new ResetPasswordRequest(email))
+            Toast.makeText(LoginActivity.this, "Vui lòng kiểm tra email của bạn để đặt lại mật khẩu", Toast.LENGTH_LONG).show();
+            // Close dialog (optional, depending on UX)
+            // ((AlertDialog) v.getTag()).dismiss();
         });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+        // Store dialog reference for resetButton to dismiss if needed
+        resetButton.setTag(alertDialog);
     }
-    public void mapping(){
-        editEmail =findViewById(R.id.editTextTaiKhoan);
-        editPassword = findViewById(R.id.editTextMatKhau);
-        textView = findViewById(R.id.textView_register);
-        btnLogin = findViewById(R.id.buttonDangNhap);
-        forgot = findViewById(R.id.textView_forgotPassword);
+
+    private boolean isValidEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }

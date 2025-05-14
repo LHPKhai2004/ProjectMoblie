@@ -55,7 +55,7 @@ public class LeaderBoardAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.leaderboardlayout, parent, false);
+        View itemView = inflater.inflate(R.layout.layout_leaderboard, parent, false);
         TextView txtUsername = itemView.findViewById(R.id.text_username);
         TextView txtScore = itemView.findViewById(R.id.text_score);
         TextView txtTime = itemView.findViewById(R.id.text_time);

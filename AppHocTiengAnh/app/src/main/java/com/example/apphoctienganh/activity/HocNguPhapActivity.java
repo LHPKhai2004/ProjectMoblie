@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,19 +11,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.apphoctienganh.R;
-import com.example.apphoctienganh.database.DataBaseGramarEnglish;
 import com.example.apphoctienganh.database.DataBasePointUser;
+import com.example.apphoctienganh.database.DataTenseSqlite;
 import com.example.apphoctienganh.model.Question;
-import com.example.apphoctienganh.model.UserPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultipleChoiceActivity extends AppCompatActivity {
+public class HocNguPhapActivity extends AppCompatActivity {
+
     private TextView txtScore, txtQuestionCount, txtTime, txtQuestion;
     private Button[] answerButtons;
     private Button btnQuit, btnConfirm;
-    private DataBaseGramarEnglish database;
+    private DataTenseSqlite database;
     private DataBasePointUser dataBasePointUser;
     private List<Question> questionList;
     private int currentQuestionIndex = 0;
@@ -77,22 +76,18 @@ public class MultipleChoiceActivity extends AppCompatActivity {
     }
 
     private void initializeDatabase() {
-        database = new DataBaseGramarEnglish(this);
+        database = new DataTenseSqlite(this);
         dataBasePointUser = new DataBasePointUser(this);
     }
 
     private void setQuestions() {
         questionList = new ArrayList<>();
-        questionList.add(new Question("He ____ to the store yesterday.", "went", "went goes go gone"));
-        questionList.add(new Question("She ____ her homework every day.", "does", "does do did doing"));
-        questionList.add(new Question("I ____ TV when the phone rang.", "was watching", "was watching watch watches watched"));
-        questionList.add(new Question("We usually ____ dinner at 7 PM.", "have", "have has had having"));
-        questionList.add(new Question("The cat ____ on the chair right now.", "sitting", "sitting sit sits is sitting"));
-        questionList.add(new Question("They ____ their car last week.", "sold", "sold sell sells selling"));
-        questionList.add(new Question("My sister ____ English very well.", "speaks", "speaks speak spoke speaking"));
-        questionList.add(new Question("She ____ her keys in the house.", "forgot", "forgot forgets forgetting forget"));
-        questionList.add(new Question("He ____ basketball every Saturday.", "plays", "plays play played playing"));
-        questionList.add(new Question("The students ____ to school by bus.", "go", "go goes went going"));
+        questionList.add(new Question("She __________ (play) tennis every Sunday", "plays", "plays play played playies"));
+        questionList.add(new Question("They __________ (visit) their grandparents last week.", "visited", "visit visits visited vista"));
+        questionList.add(new Question("I __________ (watch) a movie next weekend.", "watch", "watching watch watches watched"));
+        questionList.add(new Question("He __________ (study) Spanish at the moment.", "studying", "studying study studies studied"));
+        questionList.add(new Question("We __________ (have) lunch when they arrived.", "had", "has have had having"));
+        questionList.add(new Question("I __________ (not finish) my homework yet.", "finish", "finish finished finishes fun"));
 
         for (Question question : questionList) {
             database.addQuestion(question);
@@ -164,7 +159,7 @@ public class MultipleChoiceActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                Toast.makeText(MultipleChoiceActivity.this, "Hết thời gian!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HocNguPhapActivity.this, "Hết thời gian!", Toast.LENGTH_SHORT).show();
                 for (Button button : answerButtons) {
                     button.setEnabled(false);
                 }
@@ -195,13 +190,13 @@ public class MultipleChoiceActivity extends AppCompatActivity {
     }
 
     private void navigateToLayout() {
-        Intent intent = new Intent(MultipleChoiceActivity.this, LayoutActivity.class);
+        Intent intent = new Intent(HocNguPhapActivity.this, LayoutActivity.class);
         startActivity(intent);
         finish();
     }
 
     private void navigateToLogin() {
-        Intent intent = new Intent(MultipleChoiceActivity.this, LoginActivity.class);
+        Intent intent = new Intent(HocNguPhapActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

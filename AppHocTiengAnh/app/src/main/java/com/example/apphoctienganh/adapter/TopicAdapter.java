@@ -41,7 +41,7 @@ public class TopicAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.layoutopic, parent, false);
+        View itemView = inflater.inflate(R.layout.layout_topic, parent, false);
         TextView textVocabulary = itemView.findViewById(R.id.text_Topic);
         ImageView iamge = itemView.findViewById(R.id.image_vocabulary);
         TopicModel topicModel = list.get(position);
