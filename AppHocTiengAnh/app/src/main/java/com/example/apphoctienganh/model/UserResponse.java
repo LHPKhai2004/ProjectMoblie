@@ -1,8 +1,8 @@
 package com.example.apphoctienganh.model;
 
-public class QuestionResponse {
+public class UserResponse {
     private boolean result;
-    private Question data;
+    private User data;
     private String message;
 
     public boolean isResult() {
@@ -13,11 +13,11 @@ public class QuestionResponse {
         this.result = result;
     }
 
-    public Question getData() {
+    public User getData() {
         return data;
     }
 
-    public void setData(Question data) {
+    public void setData(User data) {
         this.data = data;
     }
 

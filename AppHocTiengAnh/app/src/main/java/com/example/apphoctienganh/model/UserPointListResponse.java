@@ -2,7 +2,7 @@ package com.example.apphoctienganh.model;
 
 import java.util.List;
 
-class UserPointListResponse {
+public class UserPointListResponse {
     private boolean result;
     private List<UserPoint> data;
     private String message;

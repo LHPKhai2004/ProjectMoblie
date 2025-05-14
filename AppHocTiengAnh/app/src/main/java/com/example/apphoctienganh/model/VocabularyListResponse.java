@@ -2,7 +2,7 @@ package com.example.apphoctienganh.model;
 
 import java.util.List;
 
-class VocabularyListResponse {
+public class VocabularyListResponse {
     private boolean result;
     private List<Vocabulary> data;
     private int totalElements;

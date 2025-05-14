@@ -1,5 +1,5 @@
 package com.example.apphoctienganh.model;
-class UserPoint {
+public class UserPoint {
     private String id;
     private User user;
     private int point;

@@ -1,8 +1,10 @@
 package com.example.apphoctienganh.model;
 
-public class QuestionResponse {
+import java.util.List;
+
+public class TopicListResponse {
     private boolean result;
-    private Question data;
+    private List<Topic> data;
     private String message;
 
     public boolean isResult() {
@@ -13,11 +15,11 @@ public class QuestionResponse {
         this.result = result;
     }
 
-    public Question getData() {
+    public List<Topic> getData() {
         return data;
     }
 
-    public void setData(Question data) {
+    public void setData(List<Topic> data) {
         this.data = data;
     }
 

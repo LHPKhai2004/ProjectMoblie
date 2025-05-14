@@ -1,5 +1,5 @@
 package com.example.apphoctienganh.model;
-class Vocabulary {
+public class Vocabulary {
     private String id;
     private String image;
     private String word;
