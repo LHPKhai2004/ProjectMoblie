@@ -1,29 +1,32 @@
 package com.example.apphoctienganh.model;
-public class UserPoint {
-    private String user;
-    private int points;
+class UserPoint {
+    private String id;
+    private User user;
+    private int point;
     private String time;
 
-    public UserPoint(String user, int points, String time) {
-        this.user = user;
-        this.points = points;
-        this.time = time;
+    public String getId() {
+        return id;
     }
 
-    public String getUser() {
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public User getUser() {
         return user;
     }
 
-    public void setUser(String user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public int getPoints() {
-        return points;
+    public int getPoint() {
+        return point;
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    public void setPoint(int point) {
+        this.point = point;
     }
 
     public String getTime() {
@@ -32,5 +35,38 @@ public class UserPoint {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public static class User {
+        private Account account;
+
+        public Account getAccount() {
+            return account;
+        }
+
+        public void setAccount(Account account) {
+            this.account = account;
+        }
+    }
+
+    public static class Account {
+        private String username;
+        private String email;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
     }
 }

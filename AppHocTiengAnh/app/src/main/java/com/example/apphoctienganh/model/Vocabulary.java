@@ -1,33 +1,32 @@
 package com.example.apphoctienganh.model;
-
-public class Vocabulary {
-    private int id;
+class Vocabulary {
+    private String id;
     private String image;
-    private String words;
+    private String word;
     private String answer;
-    private String topic;
-    public Vocabulary() {
-    }
-    public Vocabulary(int id, String image, String words, String answer, String topic) {
+    private String topicId;
+
+    public Vocabulary(String id, String image, String word, String answer, String topicId) {
         this.id = id;
         this.image = image;
-        this.words = words;
+        this.word = word;
         this.answer = answer;
-        this.topic = topic;
+        this.topicId = topicId;
     }
-    public Vocabulary( String words, String image, String answer, String topic) {
+
+    public Vocabulary(String words, String image, String answer, String topic) {
 
         this.image = image;
-        this.words = words;
+        this.word = words;
         this.answer = answer;
-        this.topic = topic;
+        this.topicId = topic;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -39,12 +38,12 @@ public class Vocabulary {
         this.image = image;
     }
 
-    public String getWords() {
-        return words;
+    public String getWord() {
+        return word;
     }
 
-    public void setWords(String words) {
-        this.words = words;
+    public void setWord(String word) {
+        this.word = word;
     }
 
     public String getAnswer() {
@@ -55,11 +54,11 @@ public class Vocabulary {
         this.answer = answer;
     }
 
-    public String getTopic() {
-        return topic;
+    public String getTopicId() {
+        return topicId;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
+    public void setTopicId(String topicId) {
+        this.topicId = topicId;
     }
 }
