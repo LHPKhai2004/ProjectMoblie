@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.example.apphoctienganh.R;
 import com.example.apphoctienganh.adapter.TopicAdapter;
 import com.example.apphoctienganh.database.TopicApi;
-import com.example.apphoctienganh.database.VocabularyApi;
 import com.example.apphoctienganh.model.Topic;
 import com.example.apphoctienganh.model.TopicListResponse;
 import com.example.apphoctienganh.model.TopicModel;
@@ -41,7 +40,7 @@ public class TopicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_topic);
 
-        // Initialize SharedPreferences
+        // Khởi tạo SharedPreferences
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String token = sharedPreferences.getString(KEY_TOKEN, null);
         if (token == null) {
@@ -60,14 +59,13 @@ public class TopicActivity extends AppCompatActivity {
     }
 
     private void setTopics(String token) {
-        topicApi.getTopicList(token,new Callback<TopicListResponse>() {
+        topicApi.getTopicList(token, new Callback<TopicListResponse>() {
             @Override
             public void onResponse(Call<TopicListResponse> call, Response<TopicListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
                     List<Topic> topics = response.body().getData();
                     if (topics != null && !topics.isEmpty()) {
                         for (Topic topic : topics) {
-                            // Map Topic to TopicModel (assuming imageView is fetched or mapped)
                             int imageResId = getImageResourceForTopic(topic.getTopic());
                             list.add(new TopicModel(imageResId, topic.getTopic()));
                         }
@@ -97,7 +95,7 @@ public class TopicActivity extends AppCompatActivity {
             case "Môi trường":
                 return R.drawable.enviroment;
             default:
-                return R.drawable.default_topic; // Thêm một drawable mặc định trong res/drawable
+                return R.drawable.default_topic;
         }
     }
 

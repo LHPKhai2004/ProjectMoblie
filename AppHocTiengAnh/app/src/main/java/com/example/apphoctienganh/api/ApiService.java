@@ -35,7 +35,7 @@ public interface ApiService {
     @POST("v1/api/auth/register")
     Call<RegisterResponse> registerUser(@Body RegisterRequest request);
 
-    @POST("v1/api/auth/verify-otp")
+    @POST("v1/api/auth/verify")
     Call<OtpResponse> verifyOtp(@Body OtpRequest request);
 
     @POST("v1/api/auth/login")

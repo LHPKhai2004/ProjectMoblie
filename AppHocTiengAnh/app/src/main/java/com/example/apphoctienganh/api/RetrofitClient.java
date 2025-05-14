@@ -10,7 +10,7 @@ public class RetrofitClient {
     public static Retrofit getClient() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://localhost:8989/") // Update to your API base URL
+                    .baseUrl("http://192.168.80.1:8989/") // Update to your API base URL
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
@@ -21,7 +21,7 @@ public class RetrofitClient {
         if (apiService == null) {
             if (retrofit == null) {
                 retrofit = new Retrofit.Builder()
-                        .baseUrl("http://localhost:8989/") // Cập nhật URL thực tế của bạn
+                        .baseUrl("http://192.168.80.1:8989/") // Cập nhật URL thực tế của bạn
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
             }
