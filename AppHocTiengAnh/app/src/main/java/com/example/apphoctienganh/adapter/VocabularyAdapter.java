@@ -55,7 +55,7 @@ public class VocabularyAdapter extends BaseAdapter {
 
         Vocabulary vocabulary = list.get(position);
         // Safely set vocabulary data
-        textVocabulary.setText("Từ vựng: " + (vocabulary.getWords() != null ? vocabulary.getWords() : "N/A"));
+        textVocabulary.setText("Từ vựng: " + (vocabulary.getWord() != null ? vocabulary.getWord() : "N/A"));
         textVocabularyAnswer.setText("Đáp án: " + (vocabulary.getAnswer() != null ? vocabulary.getAnswer() : "N/A"));
 
         // Load image with Picasso

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.apphoctienganh.R;
 import com.example.apphoctienganh.adapter.TopicAdapter;
+import com.example.apphoctienganh.database.TopicApi;
 import com.example.apphoctienganh.database.VocabularyApi;
 import com.example.apphoctienganh.model.Topic;
 import com.example.apphoctienganh.model.TopicListResponse;
@@ -30,7 +31,7 @@ public class TopicActivity extends AppCompatActivity {
     private ListView listView;
     private TopicAdapter adapter;
     private List<TopicModel> list;
-    private VocabularyApi vocabularyApi;
+    private TopicApi topicApi;
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "UserPrefs";
     private static final String KEY_TOKEN = "token";
@@ -53,13 +54,13 @@ public class TopicActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         list = new ArrayList<>();
-        vocabularyApi = new VocabularyApi(TopicActivity.this);
+        topicApi = new TopicApi();
         setTopics(token);
         setupListView();
     }
 
     private void setTopics(String token) {
-        vocabularyApi.getTopicList(new Callback<TopicListResponse>() {
+        topicApi.getTopicList(token,new Callback<TopicListResponse>() {
             @Override
             public void onResponse(Call<TopicListResponse> call, Response<TopicListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isResult()) {

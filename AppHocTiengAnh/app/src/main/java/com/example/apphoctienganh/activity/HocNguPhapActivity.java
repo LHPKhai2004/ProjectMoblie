@@ -197,7 +197,18 @@ public class HocNguPhapActivity extends AppCompatActivity {
                 long minutes = totalSeconds / 60;
                 long seconds = totalSeconds % 60;
                 String time = String.format("%02d:%02d", minutes, seconds);
-                pointUserApi.addPoints(new UserPoint(null, new UserPoint.User().setAccount(new UserPoint.Account().setUsername(username)), score, time), new Callback<ApiResponse>() {
+                UserPoint.Account account = new UserPoint.Account();
+                account.setUsername(username);
+
+                UserPoint.User user = new UserPoint.User();
+                user.setAccount(account);
+
+                UserPoint userPoint = new UserPoint();
+                userPoint.setUser(user);
+                userPoint.setPoint(score);
+                userPoint.setTime(time);
+
+                pointUserApi.addPoints(userPoint, new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                         if (response.isSuccessful() && response.body().isResult()) {

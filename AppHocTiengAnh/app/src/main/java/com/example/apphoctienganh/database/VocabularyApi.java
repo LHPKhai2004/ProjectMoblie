@@ -3,6 +3,7 @@ package com.example.apphoctienganh.database;
 import com.example.apphoctienganh.api.ApiService;
 import com.example.apphoctienganh.api.RetrofitClient;
 import com.example.apphoctienganh.model.ApiResponse;
+import com.example.apphoctienganh.model.TopicListResponse;
 import com.example.apphoctienganh.model.Vocabulary;
 import com.example.apphoctienganh.model.VocabularyListResponse;
 
@@ -19,10 +20,9 @@ public class VocabularyApi {
         apiService.createVocabulary(vocabulary).enqueue(callback);
     }
 
-    public void getVocabulariesByTopic(Callback<VocabularyListResponse> callback) {
-        apiService.getVocabularyList(topicId).enqueue(callback);
+    public void getVocabulariesByTopic(String token, String topicId, Callback<VocabularyListResponse> callback) {
+        apiService.getVocabularyList(token, topicId).enqueue(callback);
     }
-
     public void deleteVocabulary(String id, Callback<ApiResponse> callback) {
         apiService.deleteVocabulary(id).enqueue(callback);
     }

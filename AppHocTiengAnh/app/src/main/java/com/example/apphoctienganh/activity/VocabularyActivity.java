@@ -53,7 +53,7 @@ public class VocabularyActivity extends AppCompatActivity {
         String topic = intent.getStringExtra("topic");
         toolbar.setTitle("Chủ đề: " + topic);
 
-        vocabularyApi = new VocabularyApi(this);
+        vocabularyApi = new VocabularyApi();
         list = new ArrayList<>();
         if (topic != null) {
             loadVocabularies(token, topic);
@@ -64,7 +64,7 @@ public class VocabularyActivity extends AppCompatActivity {
     }
 
     private void loadVocabularies(String token, String topic) {
-        vocabularyApi.getVocabulariesByTopic(new Callback<VocabularyListResponse>() {
+        vocabularyApi.getVocabulariesByTopic(token, topic, new Callback<VocabularyListResponse>() {
             @Override
             public void onResponse(Call<VocabularyListResponse> call, Response<VocabularyListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
