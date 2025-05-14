@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,20 +11,26 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.apphoctienganh.R;
-import com.example.apphoctienganh.database.DataBaseGramarEnglish;
-import com.example.apphoctienganh.database.DataBasePointUser;
+import com.example.apphoctienganh.database.GramarEnglishApi;
+import com.example.apphoctienganh.database.PointUserApi;
+import com.example.apphoctienganh.model.ApiResponse;
 import com.example.apphoctienganh.model.Question;
+import com.example.apphoctienganh.model.QuestionListResponse;
 import com.example.apphoctienganh.model.UserPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MultipleChoiceActivity extends AppCompatActivity {
     private TextView txtScore, txtQuestionCount, txtTime, txtQuestion;
     private Button[] answerButtons;
     private Button btnQuit, btnConfirm;
-    private DataBaseGramarEnglish database;
-    private DataBasePointUser dataBasePointUser;
+    private GramarEnglishApi database;
+    private PointUserApi pointUserApi;
     private List<Question> questionList;
     private int currentQuestionIndex = 0;
     private CountDownTimer countdownTimer;
@@ -37,6 +42,7 @@ public class MultipleChoiceActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "UserPrefs";
     private static final String KEY_USERNAME = "username";
+    private static final String KEY_TOKEN = "token";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +52,8 @@ public class MultipleChoiceActivity extends AppCompatActivity {
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         username = sharedPreferences.getString(KEY_USERNAME, null);
-        if (username == null) {
+        String token = sharedPreferences.getString(KEY_TOKEN, null);
+        if (username == null || token == null) {
             Toast.makeText(this, "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
             navigateToLogin();
             return;
@@ -55,7 +62,6 @@ public class MultipleChoiceActivity extends AppCompatActivity {
         initializeViews();
         initializeDatabase();
         setQuestions();
-        displayQuestion();
         setupAnswerButtons();
         startCountdownTimer();
         setupButtons();
@@ -77,27 +83,33 @@ public class MultipleChoiceActivity extends AppCompatActivity {
     }
 
     private void initializeDatabase() {
-        database = new DataBaseGramarEnglish(this);
-        dataBasePointUser = new DataBasePointUser(this);
+        database = new GramarEnglishApi(this);
+        pointUserApi = new PointUserApi(this);
     }
 
     private void setQuestions() {
         questionList = new ArrayList<>();
-        questionList.add(new Question("He ____ to the store yesterday.", "went", "went goes go gone"));
-        questionList.add(new Question("She ____ her homework every day.", "does", "does do did doing"));
-        questionList.add(new Question("I ____ TV when the phone rang.", "was watching", "was watching watch watches watched"));
-        questionList.add(new Question("We usually ____ dinner at 7 PM.", "have", "have has had having"));
-        questionList.add(new Question("The cat ____ on the chair right now.", "sitting", "sitting sit sits is sitting"));
-        questionList.add(new Question("They ____ their car last week.", "sold", "sold sell sells selling"));
-        questionList.add(new Question("My sister ____ English very well.", "speaks", "speaks speak spoke speaking"));
-        questionList.add(new Question("She ____ her keys in the house.", "forgot", "forgot forgets forgetting forget"));
-        questionList.add(new Question("He ____ basketball every Saturday.", "plays", "plays play played playing"));
-        questionList.add(new Question("The students ____ to school by bus.", "go", "go goes went going"));
+        database.getAllQuestions(new Callback<QuestionListResponse>() {
+            @Override
+            public void onResponse(Call<QuestionListResponse> call, Response<QuestionListResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
+                    questionList = response.body().getData().getContent();
+                    if (questionList != null && !questionList.isEmpty()) {
+                        setQuestionCount();
+                        displayQuestion();
+                    } else {
+                        Toast.makeText(MultipleChoiceActivity.this, "Không có câu hỏi nào.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MultipleChoiceActivity.this, "Không thể tải câu hỏi.", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        for (Question question : questionList) {
-            database.addQuestion(question);
-        }
-        setQuestionCount();
+            @Override
+            public void onFailure(Call<QuestionListResponse> call, Throwable t) {
+                Toast.makeText(MultipleChoiceActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setQuestionCount() {
@@ -108,9 +120,10 @@ public class MultipleChoiceActivity extends AppCompatActivity {
     }
 
     private void displayQuestion() {
+        if (questionList == null || questionList.isEmpty()) return;
         Question currentQuestion = questionList.get(currentQuestionIndex);
         String[] choices = currentQuestion.getAllchoice().split(" ");
-        for (int i = 0; i < choices.length; i++) {
+        for (int i = 0; i < choices.length && i < answerButtons.length; i++) {
             answerButtons[i].setText(choices[i]);
         }
         txtQuestion.setText(currentQuestion.getQuestion());
@@ -183,8 +196,21 @@ public class MultipleChoiceActivity extends AppCompatActivity {
                 long minutes = totalSeconds / 60;
                 long seconds = totalSeconds % 60;
                 String time = String.format("%02d:%02d", minutes, seconds);
-                dataBasePointUser.addPoints(username, score, time);
-                navigateToLayout();
+                pointUserApi.addPoints(new UserPoint(null, new UserPoint.User().setAccount(new UserPoint.Account().setUsername(username)), score, time), new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        if (response.isSuccessful() && response.body().isResult()) {
+                            navigateToLayout();
+                        } else {
+                            Toast.makeText(MultipleChoiceActivity.this, "Không thể lưu điểm.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        Toast.makeText(MultipleChoiceActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 

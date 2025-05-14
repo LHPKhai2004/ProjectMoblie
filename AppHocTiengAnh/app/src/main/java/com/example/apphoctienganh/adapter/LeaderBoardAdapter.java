@@ -17,16 +17,16 @@ import java.util.Comparator;
 import java.util.List;
 
 public class LeaderBoardAdapter extends BaseAdapter {
-    private List<UserPoint> list = new ArrayList<>();
+    private List<UserPoint> list;
     private Context context;
 
     public LeaderBoardAdapter(Context context, List<UserPoint> list) {
         this.context = context;
-        this.list = list;
-        Collections.sort(list, new Comparator<UserPoint>() {
+        this.list = new ArrayList<>(list);
+        Collections.sort(this.list, new Comparator<UserPoint>() {
             @Override
             public int compare(UserPoint user1, UserPoint user2) {
-                int compareResult = Integer.compare(user2.getPoints(), user1.getPoints());
+                int compareResult = Integer.compare(user2.getPoint(), user1.getPoint());
                 if (compareResult == 0) {
                     int time1 = convertTimeStringToInteger(user1.getTime());
                     int time2 = convertTimeStringToInteger(user2.getTime());
@@ -54,13 +54,20 @@ public class LeaderBoardAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.layout_leaderboard, parent, false);
+        View itemView;
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            itemView = inflater.inflate(R.layout.layout_leaderboard, parent, false);
+        } else {
+            itemView = convertView;
+        }
+
         TextView txtUsername = itemView.findViewById(R.id.text_username);
         TextView txtScore = itemView.findViewById(R.id.text_score);
         TextView txtTime = itemView.findViewById(R.id.text_time);
         ImageView rank = itemView.findViewById(R.id.image_leaderboard);
 
+        // Set rank icon based on position
         switch (position) {
             case 0:
                 rank.setImageResource(R.drawable.top1);
@@ -83,18 +90,42 @@ public class LeaderBoardAdapter extends BaseAdapter {
         }
 
         UserPoint userPoint = list.get(position);
-        txtUsername.setText(userPoint.getUser());
-        txtScore.setText("Điểm số: " + userPoint.getPoints());
-        String[] timeParts = userPoint.getTime().split(":");
-        String formattedTime = String.format("%02d:%02d", Integer.parseInt(timeParts[0]), Integer.parseInt(timeParts[1]));
-        txtTime.setText("Thời gian: " + formattedTime);
+        // Safely access username from nested User and Account objects
+        String username = "Unknown";
+        if (userPoint.getUser() != null && userPoint.getUser().getAccount() != null) {
+            username = userPoint.getUser().getAccount().getUsername();
+        }
+        txtUsername.setText(username);
+        txtScore.setText("Điểm số: " + userPoint.getPoint());
+
+        // Format time
+        String time = userPoint.getTime();
+        if (time != null && time.contains(":")) {
+            String[] timeParts = time.split(":");
+            try {
+                String formattedTime = String.format("%02d:%02d", Integer.parseInt(timeParts[0]), Integer.parseInt(timeParts[1]));
+                txtTime.setText("Thời gian: " + formattedTime);
+            } catch (NumberFormatException e) {
+                txtTime.setText("Thời gian: N/A");
+            }
+        } else {
+            txtTime.setText("Thời gian: N/A");
+        }
 
         return itemView;
     }
+
     private int convertTimeStringToInteger(String timeString) {
-        String[] parts = timeString.split(":");
-        int minutes = Integer.parseInt(parts[0]);
-        int seconds = Integer.parseInt(parts[1]);
-        return minutes * 60 + seconds; // Chuyển đổi thành số giây
+        if (timeString == null || !timeString.contains(":")) {
+            return Integer.MAX_VALUE; // Handle invalid time gracefully
+        }
+        try {
+            String[] parts = timeString.split(":");
+            int minutes = Integer.parseInt(parts[0]);
+            int seconds = Integer.parseInt(parts[1]);
+            return minutes * 60 + seconds; // Convert to seconds
+        } catch (NumberFormatException e) {
+            return Integer.MAX_VALUE; // Handle parsing errors
+        }
     }
 }

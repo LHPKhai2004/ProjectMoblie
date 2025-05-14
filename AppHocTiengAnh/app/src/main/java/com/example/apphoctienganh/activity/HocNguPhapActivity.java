@@ -11,20 +11,27 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.apphoctienganh.R;
-import com.example.apphoctienganh.database.DataBasePointUser;
-import com.example.apphoctienganh.database.DataTenseSqlite;
+import com.example.apphoctienganh.database.PointUserApi;
+import com.example.apphoctienganh.database.DataTenseApi;
+import com.example.apphoctienganh.model.ApiResponse;
 import com.example.apphoctienganh.model.Question;
+import com.example.apphoctienganh.model.QuestionListResponse;
+import com.example.apphoctienganh.model.UserPoint;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HocNguPhapActivity extends AppCompatActivity {
 
     private TextView txtScore, txtQuestionCount, txtTime, txtQuestion;
     private Button[] answerButtons;
     private Button btnQuit, btnConfirm;
-    private DataTenseSqlite database;
-    private DataBasePointUser dataBasePointUser;
+    private DataTenseApi database;
+    private PointUserApi pointUserApi;
     private List<Question> questionList;
     private int currentQuestionIndex = 0;
     private CountDownTimer countdownTimer;
@@ -36,6 +43,7 @@ public class HocNguPhapActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "UserPrefs";
     private static final String KEY_USERNAME = "username";
+    private static final String KEY_TOKEN = "token";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +53,8 @@ public class HocNguPhapActivity extends AppCompatActivity {
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         username = sharedPreferences.getString(KEY_USERNAME, null);
-        if (username == null) {
+        String token = sharedPreferences.getString(KEY_TOKEN, null);
+        if (username == null || token == null) {
             Toast.makeText(this, "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
             navigateToLogin();
             return;
@@ -53,8 +62,7 @@ public class HocNguPhapActivity extends AppCompatActivity {
 
         initializeViews();
         initializeDatabase();
-        setQuestions();
-        displayQuestion();
+        setQuestions(token);
         setupAnswerButtons();
         startCountdownTimer();
         setupButtons();
@@ -76,23 +84,33 @@ public class HocNguPhapActivity extends AppCompatActivity {
     }
 
     private void initializeDatabase() {
-        database = new DataTenseSqlite(this);
-        dataBasePointUser = new DataBasePointUser(this);
+        database = new DataTenseApi(this);
+        pointUserApi = new PointUserApi(this);
     }
 
-    private void setQuestions() {
+    private void setQuestions(String token) {
         questionList = new ArrayList<>();
-        questionList.add(new Question("She __________ (play) tennis every Sunday", "plays", "plays play played playies"));
-        questionList.add(new Question("They __________ (visit) their grandparents last week.", "visited", "visit visits visited vista"));
-        questionList.add(new Question("I __________ (watch) a movie next weekend.", "watch", "watching watch watches watched"));
-        questionList.add(new Question("He __________ (study) Spanish at the moment.", "studying", "studying study studies studied"));
-        questionList.add(new Question("We __________ (have) lunch when they arrived.", "had", "has have had having"));
-        questionList.add(new Question("I __________ (not finish) my homework yet.", "finish", "finish finished finishes fun"));
+        database.getAllQuestions(new Callback<QuestionListResponse>() {
+            @Override
+            public void onResponse(Call<QuestionListResponse> call, Response<QuestionListResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
+                    questionList = response.body().getData().getContent();
+                    if (questionList != null && !questionList.isEmpty()) {
+                        setQuestionCount();
+                        displayQuestion();
+                    } else {
+                        Toast.makeText(HocNguPhapActivity.this, "Không có câu hỏi nào.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(HocNguPhapActivity.this, "Không thể tải câu hỏi.", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        for (Question question : questionList) {
-            database.addQuestion(question);
-        }
-        setQuestionCount();
+            @Override
+            public void onFailure(Call<QuestionListResponse> call, Throwable t) {
+                Toast.makeText(HocNguPhapActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setQuestionCount() {
@@ -103,9 +121,10 @@ public class HocNguPhapActivity extends AppCompatActivity {
     }
 
     private void displayQuestion() {
+        if (questionList == null || questionList.isEmpty()) return;
         Question currentQuestion = questionList.get(currentQuestionIndex);
         String[] choices = currentQuestion.getAllchoice().split(" ");
-        for (int i = 0; i < choices.length; i++) {
+        for (int i = 0; i < choices.length && i < answerButtons.length; i++) {
             answerButtons[i].setText(choices[i]);
         }
         txtQuestion.setText(currentQuestion.getQuestion());
@@ -178,8 +197,21 @@ public class HocNguPhapActivity extends AppCompatActivity {
                 long minutes = totalSeconds / 60;
                 long seconds = totalSeconds % 60;
                 String time = String.format("%02d:%02d", minutes, seconds);
-                dataBasePointUser.addPoints(username, score, time);
-                navigateToLayout();
+                pointUserApi.addPoints(new UserPoint(null, new UserPoint.User().setAccount(new UserPoint.Account().setUsername(username)), score, time), new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        if (response.isSuccessful() && response.body().isResult()) {
+                            navigateToLayout();
+                        } else {
+                            Toast.makeText(HocNguPhapActivity.this, "Không thể lưu điểm.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        Toast.makeText(HocNguPhapActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 

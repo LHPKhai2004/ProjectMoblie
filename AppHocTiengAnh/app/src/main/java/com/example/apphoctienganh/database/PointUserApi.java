@@ -11,13 +11,13 @@ import com.example.apphoctienganh.model.UserPointListResponse;
 
 import retrofit2.Callback;
 
-public class DataBasePointUser {
+public class PointUserApi {
     private ApiService apiService;
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "UserPrefs";
     private static final String KEY_TOKEN = "token";
 
-    public DataBasePointUser(Context context) {
+    public PointUserApi(Context context) {
         apiService = RetrofitClient.getApiService();
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }

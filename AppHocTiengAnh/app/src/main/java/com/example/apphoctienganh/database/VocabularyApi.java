@@ -8,10 +8,10 @@ import com.example.apphoctienganh.model.VocabularyListResponse;
 
 import retrofit2.Callback;
 
-public class VocabularySqlite {
+public class VocabularyApi {
     private ApiService apiService;
 
-    public VocabularySqlite() {
+    public VocabularyApi() {
         apiService = RetrofitClient.getApiService();
     }
 
@@ -19,7 +19,7 @@ public class VocabularySqlite {
         apiService.createVocabulary(vocabulary).enqueue(callback);
     }
 
-    public void getVocabulariesByTopic(String topicId, Callback<VocabularyListResponse> callback) {
+    public void getVocabulariesByTopic(Callback<VocabularyListResponse> callback) {
         apiService.getVocabularyList(topicId).enqueue(callback);
     }
 

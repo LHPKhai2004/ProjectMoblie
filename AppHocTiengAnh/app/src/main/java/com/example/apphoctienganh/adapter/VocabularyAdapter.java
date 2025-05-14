@@ -1,6 +1,5 @@
 package com.example.apphoctienganh.adapter;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VocabularyAdapter extends BaseAdapter {
-    private List<Vocabulary> list = new ArrayList<>();
+    private List<Vocabulary> list;
     private Context context;
 
     public VocabularyAdapter(Context context, List<Vocabulary> list) {
         this.context = context;
-        this.list = list;
+        this.list = new ArrayList<>(list); // Create a copy to avoid modifying the original list
     }
 
     @Override
@@ -42,18 +41,34 @@ public class VocabularyAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.layout_custom_vocabulary, parent, false);
+        View itemView;
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            itemView = inflater.inflate(R.layout.layout_custom_vocabulary, parent, false);
+        } else {
+            itemView = convertView;
+        }
+
         TextView textVocabulary = itemView.findViewById(R.id.text_Vocabulary);
         TextView textVocabularyAnswer = itemView.findViewById(R.id.text_Answer);
-        ImageView iamge = itemView.findViewById(R.id.image_vocabulary);
-        Vocabulary topicModel = list.get(position); // Check if topicModel is null
-        textVocabulary.setText("Từ vựng: " + topicModel.getWords());
-        textVocabularyAnswer.setText("Đáp án: " + topicModel.getAnswer());
-        Picasso.with(context)
-                .load(topicModel.getImage())
-                .into(iamge);
+        ImageView image = itemView.findViewById(R.id.image_vocabulary);
+
+        Vocabulary vocabulary = list.get(position);
+        // Safely set vocabulary data
+        textVocabulary.setText("Từ vựng: " + (vocabulary.getWords() != null ? vocabulary.getWords() : "N/A"));
+        textVocabularyAnswer.setText("Đáp án: " + (vocabulary.getAnswer() != null ? vocabulary.getAnswer() : "N/A"));
+
+        // Load image with Picasso
+        if (vocabulary.getImage() != null && !vocabulary.getImage().isEmpty()) {
+            Picasso.with(context)
+                    .load(vocabulary.getImage())
+                    .placeholder(R.drawable.placeholder_image) // Add a placeholder image in res/drawable
+                    .error(R.drawable.error_image) // Add an error image in res/drawable
+                    .into(image);
+        } else {
+            image.setImageResource(R.drawable.placeholder_image);
+        }
+
         return itemView;
     }
-
 }

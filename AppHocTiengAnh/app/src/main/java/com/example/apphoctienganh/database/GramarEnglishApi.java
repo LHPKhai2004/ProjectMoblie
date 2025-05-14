@@ -12,13 +12,13 @@ import com.example.apphoctienganh.model.QuestionResponse;
 
 import retrofit2.Callback;
 
-public class DataBaseGramarEnglish {
+public class GramarEnglishApi {
     private ApiService apiService;
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "UserPrefs";
     private static final String KEY_TOKEN = "token";
 
-    public DataBaseGramarEnglish(Context context) {
+    public GramarEnglishApi(Context context) {
         apiService = RetrofitClient.getApiService();
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
