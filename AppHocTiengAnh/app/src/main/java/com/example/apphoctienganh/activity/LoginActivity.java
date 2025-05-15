@@ -18,6 +18,8 @@ import com.example.apphoctienganh.api.ApiService;
 import com.example.apphoctienganh.api.RetrofitClient;
 import com.example.apphoctienganh.model.LoginRequest;
 import com.example.apphoctienganh.model.LoginResponse;
+import com.example.apphoctienganh.model.ForgetPasswordRequest;
+import com.example.apphoctienganh.model.ApiResponse;
 
 import java.io.IOException;
 
@@ -156,11 +158,44 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            // Placeholder for password reset API call
-            // Example: Call apiService.resetPassword(new ResetPasswordRequest(email))
-            Toast.makeText(LoginActivity.this, "Vui lòng kiểm tra email của bạn để đặt lại mật khẩu", Toast.LENGTH_LONG).show();
-            // Close dialog (optional, depending on UX)
-            // ((AlertDialog) v.getTag()).dismiss();
+            resetButton.setEnabled(false); // Prevent multiple clicks
+
+            ForgetPasswordRequest request = new ForgetPasswordRequest(email);
+            ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+            Call<ApiResponse> call = apiService.forgetPassword(request);
+
+            call.enqueue(new Callback<ApiResponse>() {
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    resetButton.setEnabled(true);
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse apiResponse = response.body();
+                        if (apiResponse.isResult()) {
+                            Toast.makeText(LoginActivity.this, apiResponse.getMessage(), Toast.LENGTH_LONG).show();
+                            // Close the dialog
+                            ((AlertDialog) v.getTag()).dismiss();
+                        } else {
+                            Toast.makeText(LoginActivity.this, apiResponse.getMessage() != null ? apiResponse.getMessage() : "Yêu cầu thất bại", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String errorMessage = "Lỗi server (HTTP " + response.code() + ")";
+                        if (response.errorBody() != null) {
+                            try {
+                                errorMessage += ": " + response.errorBody().string();
+                            } catch (IOException e) {
+                                errorMessage += ": Không thể đọc nội dung lỗi";
+                            }
+                        }
+                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    resetButton.setEnabled(true);
+                    Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         });
 
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
