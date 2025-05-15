@@ -21,11 +21,7 @@
         tools:targetApi="31">
         <activity
             android:name=".activity.ListeningActivity"
-            android:exported="true" >
-        </activity>
-        <activity
-            android:name=".activity.HocNguPhapActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activity.VocabularyActivity"
             android:theme="@style/Theme.ProjectSE.NoActionBar"
@@ -42,10 +38,13 @@
             android:name=".activity.LayoutActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MultipleChoiceActivity"
-            android:exported="true" />
-        <activity
             android:name=".activity.SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.MultipleChoiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ResultActivity"
             android:exported="false" />
         <activity
             android:name=".activity.LoginActivity"

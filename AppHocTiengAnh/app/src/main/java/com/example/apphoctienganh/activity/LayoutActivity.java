@@ -5,88 +5,46 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.apphoctienganh.R;
+import com.example.apphoctienganh.activity.LeaderBoardActivity;
+import com.example.apphoctienganh.activity.ListeningActivity;
+import com.example.apphoctienganh.activity.LoginActivity;
+import com.example.apphoctienganh.activity.MultipleChoiceActivity;
+import com.example.apphoctienganh.activity.TopicActivity;
 
 public class LayoutActivity extends AppCompatActivity {
-    private TextView username;
-    private ImageView questionQuick;
-    private ImageView leaderBoard;
-    private ImageView vocabulary;
-    private ImageView grammar;
-    private ImageView listening;
-    private SharedPreferences sharedPreferences;
-    private static final String PREF_NAME = "UserPrefs";
-    private static final String KEY_USERNAME = "username";
+    private TextView tvUsername;
+    private ImageView imgQuestionQuick, imgLeaderBoard, imgVocabulary, imgGrammar, imgListening;
+    private SharedPreferences prefs;
+    private static final String PREF_NAME = "UserPrefs", KEY_USERNAME = "username";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_layout);
-
-        // Initialize SharedPreferences
-        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-
-        mapping();
-        displayUsername();
-        setupImageClickListeners();
+        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        initViews();
+        tvUsername.setText(prefs.getString(KEY_USERNAME, "Khách"));
+        setupClickListeners();
     }
 
-    private void mapping() {
-        username = findViewById(R.id.username);
-        questionQuick = findViewById(R.id.questionQuick);
-        leaderBoard = findViewById(R.id.leaderBoard);
-        vocabulary = findViewById(R.id.image_vocabulary);
-        grammar = findViewById(R.id.grammar);
-        listening = findViewById(R.id.listening);
+    private void initViews() {
+        tvUsername = findViewById(R.id.username);
+        imgQuestionQuick = findViewById(R.id.questionQuick);
+        imgLeaderBoard = findViewById(R.id.leaderBoard);
+        imgVocabulary = findViewById(R.id.image_vocabulary);
+        imgGrammar = findViewById(R.id.grammar);
+        imgListening = findViewById(R.id.listening);
     }
 
-    private void displayUsername() {
-        // Retrieve username from SharedPreferences
-        String savedUsername = sharedPreferences.getString(KEY_USERNAME, null);
-        if (savedUsername != null) {
-            username.setText(savedUsername);
-        } else {
-            // Fallback if no username is found (e.g., unexpected state)
-            username.setText("Guest");
-        }
-    }
-
-    private void setupImageClickListeners() {
-        questionQuick.setOnClickListener(v -> {
-            Intent intent = new Intent(LayoutActivity.this, MultipleChoiceActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
-        leaderBoard.setOnClickListener(v -> {
-            Intent intent = new Intent(LayoutActivity.this, LeaderBoardActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
-        vocabulary.setOnClickListener(v -> {
-            Intent intent = new Intent(LayoutActivity.this, TopicActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
-        grammar.setOnClickListener(v -> {
-            Intent intent = new Intent(LayoutActivity.this, HocNguPhapActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
-        listening.setOnClickListener(v -> {
-            Intent intent = new Intent(LayoutActivity.this, ListeningActivity.class);
-            startActivity(intent);
-            finish();
-        });
+    private void setupClickListeners() {
+        imgQuestionQuick.setOnClickListener(v -> startActivity(new Intent(this, MultipleChoiceActivity.class)));
+        imgLeaderBoard.setOnClickListener(v -> startActivity(new Intent(this, LeaderBoardActivity.class)));
+        imgVocabulary.setOnClickListener(v -> startActivity(new Intent(this, TopicActivity.class)));
+        imgListening.setOnClickListener(v -> startActivity(new Intent(this, ListeningActivity.class)));
     }
 
     @Override
@@ -98,14 +56,8 @@ public class LayoutActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.logout) {
-            // Clear user data from SharedPreferences
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.clear(); // Clears all data, including username and token
-            editor.apply();
-
-            // Navigate to LoginActivity
-            Intent intent = new Intent(LayoutActivity.this, LoginActivity.class);
-            startActivity(intent);
+            prefs.edit().clear().apply();
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
             return true;
         }

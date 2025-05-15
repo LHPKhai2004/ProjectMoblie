@@ -1,25 +1,23 @@
 package com.example.apphoctienganh.model;
+
+import com.google.gson.annotations.SerializedName;
+
 public class UserPoint {
-    private String id;
-    private User user;
+    @SerializedName("point")
     private int point;
+
+    @SerializedName("time")
     private String time;
 
-    public String getId() {
-        return id;
-    }
+    @SerializedName("user")
+    private User user;
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
+    public UserPoint(int point, String time, User user) {
+        this.point = point;
+        this.time = time;
         this.user = user;
     }
+    public UserPoint() {}
 
     public int getPoint() {
         return point;
@@ -37,8 +35,21 @@ public class UserPoint {
         this.time = time;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public static class User {
+        @SerializedName("account")
         private Account account;
+
+        public User(Account account) {
+            this.account = account;
+        }
 
         public Account getAccount() {
             return account;
@@ -50,8 +61,12 @@ public class UserPoint {
     }
 
     public static class Account {
+        @SerializedName("username")
         private String username;
-        private String email;
+
+        public Account(String username) {
+            this.username = username;
+        }
 
         public String getUsername() {
             return username;
@@ -59,14 +74,6 @@ public class UserPoint {
 
         public void setUsername(String username) {
             this.username = username;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
         }
     }
 }

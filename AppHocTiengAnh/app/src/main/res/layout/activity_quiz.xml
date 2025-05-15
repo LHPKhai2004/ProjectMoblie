@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F5F5F5">
+
+    <!-- Header Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="#26A69A"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_timer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_timer"
+            android:drawablePadding="10dp"
+            android:text="30:00"
+            android:textColor="@color/color_white"
+            android:textSize="20sp"
+            android:drawableTint="@color/color_white" />
+
+        <TextView
+            android:id="@+id/tv_score"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:drawablePadding="10dp"
+            android:text="Score: 0"
+            android:textColor="@color/color_white"
+            android:textSize="20sp"
+            android:drawableTint="@color/color_white" />
+
+    </LinearLayout>
+
+    <!-- Question Count -->
+    <TextView
+        android:id="@+id/tv_question_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:drawableRight="@drawable/ic_question"
+        android:drawablePadding="10dp"
+        android:text="Question: 1/x"
+        android:textColor="#26A69A"
+        android:textSize="20sp"
+        android:drawableTint="#26A69A" />
+
+    <!-- Question Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="4dp"
+        android:background="#26A69A"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Question goes here"
+            android:textColor="@color/color_white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Options Section -->
+    <RadioGroup
+        android:id="@+id/rg_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+        <RadioButton
+            android:id="@+id/rb_option1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/option_background"
+            android:padding="12dp"
+            android:text="Option 1"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:buttonTint="#26A69A" />
+
+        <RadioButton
+            android:id="@+id/rb_option2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/option_background"
+            android:padding="12dp"
+            android:text="Option 2"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:buttonTint="#26A69A" />
+
+        <RadioButton
+            android:id="@+id/rb_option3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/option_background"
+            android:padding="12dp"
+            android:text="Option 3"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:buttonTint="#26A69A" />
+
+        <RadioButton
+            android:id="@+id/rb_option4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/option_background"
+            android:padding="12dp"
+            android:text="Option 4"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:buttonTint="#26A69A" />
+
+    </RadioGroup>
+
+    <!-- Buttons Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
+            android:text="Submit"
+            android:textColor="@color/color_white"
+            android:textSize="13sp"
+            android:backgroundTint="#6EE608" />
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:text="Next"
+            android:textColor="@color/color_white"
+            android:textSize="13sp"
+            android:backgroundTint="#F50000"
+            android:enabled="false" />
+
+    </LinearLayout>
+
+</LinearLayout>

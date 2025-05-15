@@ -5,255 +5,184 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.apphoctienganh.R;
-import com.example.apphoctienganh.database.GramarEnglishApi;
-import com.example.apphoctienganh.database.PointUserApi;
-import com.example.apphoctienganh.model.ApiResponse;
+import com.example.apphoctienganh.api.ApiService;
+import com.example.apphoctienganh.api.RetrofitClient;
 import com.example.apphoctienganh.model.Question;
 import com.example.apphoctienganh.model.QuestionListResponse;
-import com.example.apphoctienganh.model.UserPoint;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MultipleChoiceActivity extends AppCompatActivity {
-    private TextView txtScore, txtQuestionCount, txtTime, txtQuestion;
-    private Button[] answerButtons;
-    private Button btnQuit, btnConfirm;
-    private GramarEnglishApi database;
-    private PointUserApi pointUserApi;
-    private List<Question> questionList;
-    private int currentQuestionIndex = 0;
-    private CountDownTimer countdownTimer;
-    private int score = 0;
-    private int total;
-    private int currentQuestionIndexSetText;
-    private String username;
-    private long remainingTimeInMillis;
-    private SharedPreferences sharedPreferences;
-    private static final String PREF_NAME = "UserPrefs";
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_TOKEN = "token";
+    private TextView tvQuestion, tvTimer, tvScore, tvQuestionCount;
+    private RadioGroup rgOptions;
+    private RadioButton rbOption1, rbOption2, rbOption3, rbOption4;
+    private Button btnSubmit, btnNext;
+    private List<Question> questionList = new ArrayList<>();
+    private int currentQuestionIndex = 0, score = 0;
+    private SharedPreferences prefs;
+    private CountDownTimer countDownTimer;
+    private static final String PREF_NAME = "UserPrefs", KEY_TOKEN = "token";
+    private static final long TIME_PER_QUESTION_MS = 30_000; // 30 seconds per question
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trac_nghiem);
+        setContentView(R.layout.activity_quiz);
+        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        initViews();
+        fetchQuestions();
+        btnSubmit.setOnClickListener(v -> submitAnswer());
+        btnNext.setOnClickListener(v -> showNextQuestion());
+    }
 
-        // Initialize SharedPreferences
-        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        username = sharedPreferences.getString(KEY_USERNAME, null);
-        String token = sharedPreferences.getString(KEY_TOKEN, null);
-        if (username == null || token == null) {
-            Toast.makeText(this, "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
-            navigateToLogin();
+    private void initViews() {
+        tvQuestion = findViewById(R.id.tv_question);
+        tvTimer = findViewById(R.id.tv_timer); // Add this ID to the timer TextView in XML
+        tvScore = findViewById(R.id.tv_score); // Add this ID to the score TextView in XML
+        tvQuestionCount = findViewById(R.id.tv_question_count); // Add this ID to the question count TextView in XML
+        rgOptions = findViewById(R.id.rg_options);
+        rbOption1 = findViewById(R.id.rb_option1);
+        rbOption2 = findViewById(R.id.rb_option2);
+        rbOption3 = findViewById(R.id.rb_option3);
+        rbOption4 = findViewById(R.id.rb_option4);
+        btnSubmit = findViewById(R.id.btn_submit);
+        btnNext = findViewById(R.id.btn_next);
+    }
+
+    private void fetchQuestions() {
+        String token = prefs.getString(KEY_TOKEN, "");
+        if (token.isEmpty()) {
+            Toast.makeText(this, "Vui lòng đăng nhập để tiếp tục", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
             return;
         }
-
-        initializeViews();
-        initializeDatabase();
-        setQuestions();
-        setupAnswerButtons();
-        startCountdownTimer();
-        setupButtons();
-    }
-
-    private void initializeViews() {
-        txtScore = findViewById(R.id.txtscoreDK);
-        txtQuestionCount = findViewById(R.id.txtquestcountDK);
-        txtTime = findViewById(R.id.txttimeDK);
-        txtQuestion = findViewById(R.id.txtquestionDK);
-        answerButtons = new Button[] {
-                findViewById(R.id.txtanswer1),
-                findViewById(R.id.txtanswer2),
-                findViewById(R.id.txtanswer3),
-                findViewById(R.id.txtanswer4)
-        };
-        btnQuit = findViewById(R.id.btnQuitDK);
-        btnConfirm = findViewById(R.id.btnconfirmDK);
-    }
-
-    private void initializeDatabase() {
-        database = new GramarEnglishApi(this);
-        pointUserApi = new PointUserApi(this);
-    }
-
-    private void setQuestions() {
-        questionList = new ArrayList<>();
-        database.getAllQuestions(new Callback<QuestionListResponse>() {
+        ApiService apiService = RetrofitClient.getApiService();
+        apiService.getQuestionList("Bearer " + token).enqueue(new Callback<QuestionListResponse>() {
             @Override
             public void onResponse(Call<QuestionListResponse> call, Response<QuestionListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
                     questionList = response.body().getData().getContent();
-                    if (questionList != null && !questionList.isEmpty()) {
-                        setQuestionCount();
+                    if (!questionList.isEmpty()) {
+                        startTimer(questionList.size() * TIME_PER_QUESTION_MS);
                         displayQuestion();
                     } else {
-                        Toast.makeText(MultipleChoiceActivity.this, "Không có câu hỏi nào.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MultipleChoiceActivity.this, "Không có câu hỏi nào", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 } else {
-                    Toast.makeText(MultipleChoiceActivity.this, "Không thể tải câu hỏi.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MultipleChoiceActivity.this, "Tải câu hỏi thất bại", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<QuestionListResponse> call, Throwable t) {
-                Toast.makeText(MultipleChoiceActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MultipleChoiceActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }
 
-    private void setQuestionCount() {
-        total = questionList.size();
-        currentQuestionIndexSetText = currentQuestionIndex + 1;
-        txtQuestionCount.setText("Question: " + currentQuestionIndexSetText + "/" + total);
-        txtQuestionCount.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_question, 0);
-    }
-
-    private void displayQuestion() {
-        if (questionList == null || questionList.isEmpty()) return;
-        Question currentQuestion = questionList.get(currentQuestionIndex);
-        String[] choices = currentQuestion.getAllchoice().split(" ");
-        for (int i = 0; i < answerButtons.length; i++) {
-            if (i < choices.length) {
-                answerButtons[i].setText(choices[i]);
-                answerButtons[i].setEnabled(true);
-            } else {
-                answerButtons[i].setText("");
-                answerButtons[i].setEnabled(false);
-            }
-        }
-        txtQuestion.setText(currentQuestion.getQuestion());
-        setQuestionCount();
-    }
-
-    private void setupAnswerButtons() {
-        for (final Button button : answerButtons) {
-            button.setOnClickListener(v -> {
-                String answer = button.getText().toString();
-                checkAnswer(answer);
-                moveToNextQuestion();
-            });
-        }
-    }
-
-    private void checkAnswer(String selectedAnswer) {
-        String correctAnswer = questionList.get(currentQuestionIndex).getAnswer();
-        String feedback;
-        if (selectedAnswer.equals(correctAnswer)) {
-            feedback = "Đáp án đúng";
-            score += 10;
-            txtScore.setText("Score: " + score);
-        } else {
-            feedback = "Đáp án sai";
-        }
-        Toast.makeText(this, feedback, Toast.LENGTH_SHORT).show();
-    }
-
-    private void moveToNextQuestion() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questionList.size()) {
-            displayQuestion();
-        } else {
-            Toast.makeText(this, "Bạn đã hoàn thành tất cả câu hỏi", Toast.LENGTH_SHORT).show();
-            for (Button button : answerButtons) {
-                button.setEnabled(false);
-            }
-        }
-    }
-
-    private void startCountdownTimer() {
-        countdownTimer = new CountDownTimer(600000, 1000) {
+    private void startTimer(long totalTimeMs) {
+        countDownTimer = new CountDownTimer(totalTimeMs, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                long minutes = millisUntilFinished / 60000;
-                long seconds = (millisUntilFinished % 60000) / 1000;
-                txtTime.setText(String.format("%02d:%02d", minutes, seconds));
-                remainingTimeInMillis = millisUntilFinished;
+                long minutes = millisUntilFinished / 1000 / 60;
+                long seconds = (millisUntilFinished / 1000) % 60;
+                tvTimer.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
             }
 
             @Override
             public void onFinish() {
+                tvTimer.setText("00:00");
                 Toast.makeText(MultipleChoiceActivity.this, "Hết thời gian!", Toast.LENGTH_SHORT).show();
-                for (Button button : answerButtons) {
-                    button.setEnabled(false);
-                }
+                endQuiz();
             }
-        };
-        countdownTimer.start();
+        }.start();
     }
 
-    private void setupButtons() {
-        btnConfirm.setOnClickListener(v -> {
-            if (currentQuestionIndex < questionList.size()) {
-                Toast.makeText(this, "Bạn chưa hoàn thành tất cả câu hỏi", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Điểm của bạn: " + score, Toast.LENGTH_SHORT).show();
-                long timeTakenInMillis = 600000 - remainingTimeInMillis;
-                long totalSeconds = timeTakenInMillis / 1000;
-                long minutes = totalSeconds / 60;
-                long seconds = totalSeconds % 60;
-                String timeTaken = String.format("%02d:%02d", minutes, seconds);
-                UserPoint.Account account = new UserPoint.Account();
-                account.setUsername(username);
-
-                UserPoint.User user = new UserPoint.User();
-                user.setAccount(account);
-
-                UserPoint userPoint = new UserPoint();
-                userPoint.setUser(user);
-                userPoint.setPoint(score);
-                userPoint.setTime(timeTaken);
-                pointUserApi.addPoints(userPoint, new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body().isResult()) {
-                            navigateToLayout();
-                        } else {
-                            Toast.makeText(MultipleChoiceActivity.this, "Không thể lưu điểm.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        Toast.makeText(MultipleChoiceActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void displayQuestion() {
+        if (currentQuestionIndex < questionList.size()) {
+            Question question = questionList.get(currentQuestionIndex);
+            tvQuestion.setText(question.getQuestion());
+            String[] options = question.getAllChoice().split(" ");
+            if (options.length >= 4) {
+                rbOption1.setText(options[0]);
+                rbOption2.setText(options[1]);
+                rbOption3.setText(options[2]);
+                rbOption4.setText(options[3]);
             }
-        });
-
-        btnQuit.setOnClickListener(v -> {
-            countdownTimer.cancel();
-            navigateToLayout();
-        });
+            rgOptions.clearCheck();
+            btnSubmit.setEnabled(true);
+            btnNext.setEnabled(false);
+            tvScore.setText("Score: " + score);
+            tvQuestionCount.setText("Question: " + (currentQuestionIndex + 1) + "/" + questionList.size());
+        } else {
+            endQuiz();
+        }
     }
 
-    private void navigateToLayout() {
-        Intent intent = new Intent(MultipleChoiceActivity.this, LayoutActivity.class);
+    private void submitAnswer() {
+        int selectedId = rgOptions.getCheckedRadioButtonId();
+        if (selectedId == -1) {
+            Toast.makeText(this, "Vui lòng chọn đáp án", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        RadioButton selectedOption = findViewById(selectedId);
+        String selectedAnswer = selectedOption.getText().toString();
+        Question currentQuestion = questionList.get(currentQuestionIndex);
+        if (selectedAnswer.equals(currentQuestion.getAnswer())) {
+            score++;
+            Toast.makeText(this, "Đúng!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Sai! Đáp án đúng: " + currentQuestion.getAnswer(), Toast.LENGTH_SHORT).show();
+        }
+        btnSubmit.setEnabled(false);
+        btnNext.setEnabled(true);
+    }
+
+    private void showNextQuestion() {
+        currentQuestionIndex++;
+        displayQuestion();
+    }
+
+    private void endQuiz() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putExtra("SCORE", score);
+        intent.putExtra("TOTAL_QUESTIONS", questionList.size());
         startActivity(intent);
         finish();
     }
 
-    private void navigateToLogin() {
-        Intent intent = new Intent(MultipleChoiceActivity.this, LoginActivity.class);
-        startActivity(intent);
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        startActivity(new Intent(this, LayoutActivity.class));
         finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (countdownTimer != null) {
-            countdownTimer.cancel();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
         }
     }
 }

@@ -1,114 +1,95 @@
 package com.example.apphoctienganh.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import com.example.apphoctienganh.R;
 import com.example.apphoctienganh.adapter.TopicAdapter;
-import com.example.apphoctienganh.database.TopicApi;
+import com.example.apphoctienganh.api.ApiService;
+import com.example.apphoctienganh.api.RetrofitClient;
 import com.example.apphoctienganh.model.Topic;
 import com.example.apphoctienganh.model.TopicListResponse;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TopicActivity extends AppCompatActivity {
-    private ListView listView;
+    private static final String PREF_NAME = "UserPrefs", KEY_TOKEN = "token";
+    private ListView lvTopics;
     private TopicAdapter adapter;
-    private List<Topic> list;
-    private TopicApi topicApi;
-    private SharedPreferences sharedPreferences;
-    private static final String PREF_NAME = "UserPrefs";
-    private static final String KEY_TOKEN = "token";
+    private List<Topic> topics = new ArrayList<>();
+    private ApiService apiService = RetrofitClient.getApiService();
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_topic);
-
-        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        String token = sharedPreferences.getString(KEY_TOKEN, null);
+        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        String token = prefs.getString(KEY_TOKEN, null);
         if (token == null) {
-            Toast.makeText(this, "Please log in again.", Toast.LENGTH_LONG).show();
-            navigateToLogin();
+            Toast.makeText(this, "Vui lòng đăng nhập lại", Toast.LENGTH_LONG).show();
+            navigateTo(LoginActivity.class);
             return;
         }
-
-        listView = findViewById(R.id.listview);
+        lvTopics = findViewById(R.id.listview);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        list = new ArrayList<>();
-        topicApi = new TopicApi();
-        setTopics(token);
+        loadTopics("Bearer " + token);
         setupListView();
     }
 
-    private void setTopics(String token) {
-        topicApi.getTopicList("Bearer " + token, new Callback<TopicListResponse>() {
+    private void loadTopics(String token) {
+        apiService.getTopicList(token).enqueue(new Callback<TopicListResponse>() {
             @Override
             public void onResponse(Call<TopicListResponse> call, Response<TopicListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
-                    List<Topic> topics = response.body().getData();
-                    if (topics != null && !topics.isEmpty()) {
-                        list.clear();
-                        for (Topic topic : topics) {
-                            list.add(new Topic(topic.getId(), topic.getImageView(), topic.getTopic()));
-                        }
-                        adapter = new TopicAdapter(TopicActivity.this, list);
-                        listView.setAdapter(adapter);
+                    List<Topic> data = response.body().getData();
+                    if (data != null && !data.isEmpty()) {
+                        topics.clear();
+                        topics.addAll(data);
+                        adapter = new TopicAdapter(TopicActivity.this, topics);
+                        lvTopics.setAdapter(adapter);
                     } else {
-                        Toast.makeText(TopicActivity.this, "No topics available.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TopicActivity.this, "Không có chủ đề nào", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(TopicActivity.this, "Failed to load topic list.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TopicActivity.this, "Tải danh sách chủ đề thất bại", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<TopicListResponse> call, Throwable t) {
-                Toast.makeText(TopicActivity.this, "Connection error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TopicActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setupListView() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Topic selectedTopic = list.get(i);
-                Intent intent = new Intent(TopicActivity.this, VocabularyActivity.class);
-                intent.putExtra("topicId", selectedTopic.getId());
-                intent.putExtra("topicName", selectedTopic.getTopic());
-                startActivity(intent);
-            }
+        lvTopics.setOnItemClickListener((parent, view, position, id) -> {
+            Topic topic = topics.get(position);
+            Intent intent = new Intent(this, VocabularyActivity.class);
+            intent.putExtra("topicId", topic.getId());
+            intent.putExtra("topicName", topic.getTopic());
+            startActivity(intent);
         });
     }
 
-    private void navigateToLogin() {
-        Intent intent = new Intent(TopicActivity.this, LoginActivity.class);
-        startActivity(intent);
+    private void navigateTo(Class<?> targetActivity) {
+        startActivity(new Intent(this, targetActivity));
         finish();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(TopicActivity.this, LayoutActivity.class);
-            startActivity(intent);
-            finish();
+            navigateTo(LayoutActivity.class);
             return true;
         }
         return super.onOptionsItemSelected(item);

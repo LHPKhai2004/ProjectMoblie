@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F5F5F5">
+
+    <!-- Header Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="#26A69A"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/ic_question"
+            android:drawablePadding="10dp"
+            android:text="Quiz Result"
+            android:textColor="@color/color_white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:drawableTint="@color/color_white" />
+
+    </LinearLayout>
+
+    <!-- Result Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="16dp"
+        android:background="#26A69A"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Score: 0/0"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_white" />
+
+    </LinearLayout>
+
+    <!-- Action Button -->
+    <Button
+        android:id="@+id/btn_back_to_layout"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:text="Back to Home"
+        android:textColor="@color/color_white"
+        android:textSize="13sp"
+        android:backgroundTint="#6EE608" />
+
+</LinearLayout>

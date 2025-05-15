@@ -1,9 +1,12 @@
 package com.example.apphoctienganh.model;
 
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 public class ApiResponse {
+    @SerializedName("result")
     private boolean result;
+
+    @SerializedName("message")
     private String message;
 
     public boolean isResult() {
