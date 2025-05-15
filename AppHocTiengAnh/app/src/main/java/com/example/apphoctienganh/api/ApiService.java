@@ -1,6 +1,7 @@
 package com.example.apphoctienganh.api;
 
 import com.example.apphoctienganh.model.ApiResponse;
+import com.example.apphoctienganh.model.ForgetPasswordRequest;
 import com.example.apphoctienganh.model.Question;
 import com.example.apphoctienganh.model.QuestionListResponse;
 import com.example.apphoctienganh.model.QuestionResponse;
@@ -43,8 +44,8 @@ public interface ApiService {
     @PUT("v1/api/question/update")
     Call<ApiResponse> updateQuestion(@Body Question question);
 
-//    @POST("v1/api/auth/forget-password")
-//    Call<ApiResponse> forgetPassword(@Body ForgetPasswordRequest request);
+    @POST("v1/api/auth/forget-password")
+    Call<ApiResponse> forgetPassword(@Body ForgetPasswordRequest request);
 
     @DELETE("v1/api/question/delete/{id}")
     Call<ApiResponse> deleteQuestion(@Path("id") String id);
