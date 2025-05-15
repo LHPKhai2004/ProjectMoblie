@@ -1,10 +1,20 @@
 package com.example.apphoctienganh.model;
 
-public class Topic {
+import java.io.Serializable;
+
+public class Topic implements Serializable {
     private String id;
     private String imageView;
     private String topic;
 
+    // Constructor for API response
+    public Topic(String id, String imageView, String topic) {
+        this.id = id;
+        this.imageView = imageView;
+        this.topic = topic;
+    }
+
+    // Getters and setters
     public String getId() {
         return id;
     }
