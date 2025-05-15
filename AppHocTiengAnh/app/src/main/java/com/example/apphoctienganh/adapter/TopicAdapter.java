@@ -12,7 +12,9 @@ import com.example.apphoctienganh.R;
 import com.example.apphoctienganh.model.Topic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TopicAdapter extends BaseAdapter {
     private List<Topic> list;
@@ -55,19 +57,12 @@ public class TopicAdapter extends BaseAdapter {
         // Safely set topic data
         textTopic.setText("Topic: " + (topic.getTopic() != null ? topic.getTopic() : "N/A"));
 
-        // Set image resource based on topic name (since imageView from API is a string)
-        int imageResId;
-        switch (topic.getTopic() != null ? topic.getTopic() : "") {
-            case "Sport":
-                imageResId = R.drawable.sport;
-                break;
-            case "Enviroment":
-                imageResId = R.drawable.enviroment;
-                break;
-            default:
-                imageResId = R.drawable.default_topic;
-                break;
-        }
+        Map<String, Integer> topicImageMap = new HashMap<>();
+        topicImageMap.put("Sport", R.drawable.sport);
+        topicImageMap.put("Enviroment", R.drawable.enviroment);
+        topicImageMap.put("", R.drawable.default_topic);
+        String topicName = topic.getTopic() != null ? topic.getTopic() : "";
+        int imageResId = topicImageMap.getOrDefault(topicName, R.drawable.default_topic);
         image.setImageResource(imageResId);
 
         return itemView;

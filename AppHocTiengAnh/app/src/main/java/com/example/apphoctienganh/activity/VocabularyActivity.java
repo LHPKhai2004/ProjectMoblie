@@ -71,12 +71,17 @@ public class VocabularyActivity extends AppCompatActivity {
             public void onResponse(Call<VocabularyListResponse> call, Response<VocabularyListResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().isResult()) {
-                        list = response.body().getData();
-                        if (list != null && !list.isEmpty()) {
-                            adapter = new VocabularyAdapter(VocabularyActivity.this, list);
-                            listView.setAdapter(adapter);
+                        VocabularyListResponse.Data data = response.body().getData();
+                        if (data != null && data.getContent() != null) {
+                            list = data.getContent();
+                            if (!list.isEmpty()) {
+                                adapter = new VocabularyAdapter(VocabularyActivity.this, list);
+                                listView.setAdapter(adapter);
+                            } else {
+                                Toast.makeText(VocabularyActivity.this, "Không có từ vựng nào cho chủ đề này.", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            Toast.makeText(VocabularyActivity.this, "Không có từ vựng nào cho chủ đề này.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(VocabularyActivity.this, "Dữ liệu không hợp lệ.", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Toast.makeText(VocabularyActivity.this, "Không thể tải từ vựng.", Toast.LENGTH_SHORT).show();

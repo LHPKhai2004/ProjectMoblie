@@ -42,14 +42,13 @@ public class DataTenseApi {
         }
     }
 
-    // API yêu cầu token
     public void getAllQuestions(Callback<QuestionListResponse> callback) {
         String token = getToken();
-        if (token != null) {
-            apiService.getQuestionList("Bearer " + token).enqueue(callback);
-        } else {
-            // Xử lý lỗi khi không có token
+        if (token == null) {
+            callback.onFailure(null, new Throwable("No token available. Please log in again."));
+            return;
         }
+        apiService.getQuestionList("Bearer " + token).enqueue(callback);
     }
 
     // API không yêu cầu token

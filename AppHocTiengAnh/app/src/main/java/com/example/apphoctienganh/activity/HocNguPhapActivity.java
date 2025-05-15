@@ -123,9 +123,14 @@ public class HocNguPhapActivity extends AppCompatActivity {
     private void displayQuestion() {
         if (questionList == null || questionList.isEmpty()) return;
         Question currentQuestion = questionList.get(currentQuestionIndex);
-        String[] choices = currentQuestion.getAllchoice().split(" ");
+        String allChoices = currentQuestion.getAllchoice();
+        if (allChoices == null || allChoices.trim().isEmpty()) {
+            Toast.makeText(this, "Invalid question choices", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String[] choices = allChoices.split(" ");
         for (int i = 0; i < choices.length && i < answerButtons.length; i++) {
-            answerButtons[i].setText(choices[i]);
+            answerButtons[i].setText(choices[i].trim());
         }
         txtQuestion.setText(currentQuestion.getQuestion());
         setQuestionCount();

@@ -4,12 +4,7 @@ import java.util.List;
 
 public class VocabularyListResponse {
     private boolean result;
-    private List<Vocabulary> data;
-    private int totalElements;
-    private int totalPages;
-
-    public VocabularyListResponse() {
-    }
+    private Data data;
 
     public boolean isResult() {
         return result;
@@ -19,27 +14,41 @@ public class VocabularyListResponse {
         this.result = result;
     }
 
-    public List<Vocabulary> getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(List<Vocabulary> data) {
+    public void setData(Data data) {
         this.data = data;
     }
 
-    public int getTotalElements() {
-        return totalElements;
-    }
+    public static class Data {
+        private List<Vocabulary> content;
+        private int totalElements;
+        private int totalPages;
 
-    public void setTotalElements(int totalElements) {
-        this.totalElements = totalElements;
-    }
+        public List<Vocabulary> getContent() {
+            return content;
+        }
 
-    public int getTotalPages() {
-        return totalPages;
-    }
+        public void setContent(List<Vocabulary> content) {
+            this.content = content;
+        }
 
-    public void setTotalPages(int totalPages) {
-        this.totalPages = totalPages;
+        public int getTotalElements() {
+            return totalElements;
+        }
+
+        public void setTotalElements(int totalElements) {
+            this.totalElements = totalElements;
+        }
+
+        public int getTotalPages() {
+            return totalPages;
+        }
+
+        public void setTotalPages(int totalPages) {
+            this.totalPages = totalPages;
+        }
     }
 }
