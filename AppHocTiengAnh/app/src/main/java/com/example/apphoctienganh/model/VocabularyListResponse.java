@@ -7,7 +7,9 @@ public class VocabularyListResponse {
     private List<Vocabulary> data;
     private int totalElements;
     private int totalPages;
-    private String message;
+
+    public VocabularyListResponse() {
+    }
 
     public boolean isResult() {
         return result;
@@ -39,13 +41,5 @@ public class VocabularyListResponse {
 
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }

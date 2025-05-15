@@ -39,7 +39,6 @@ public class TopicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_topic);
 
-        // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String token = sharedPreferences.getString(KEY_TOKEN, null);
         if (token == null) {
@@ -91,7 +90,8 @@ public class TopicActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Topic selectedTopic = list.get(i);
                 Intent intent = new Intent(TopicActivity.this, VocabularyActivity.class);
-                intent.putExtra("topic", selectedTopic.getTopic());
+                intent.putExtra("topicId", selectedTopic.getId());
+                intent.putExtra("topicName", selectedTopic.getTopic());
                 startActivity(intent);
             }
         });

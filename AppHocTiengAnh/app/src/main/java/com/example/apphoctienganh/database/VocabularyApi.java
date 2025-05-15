@@ -21,8 +21,9 @@ public class VocabularyApi {
     }
 
     public void getVocabulariesByTopic(String token, String topicId, Callback<VocabularyListResponse> callback) {
-        apiService.getVocabularyList(token, topicId).enqueue(callback);
+        apiService.getVocabularyList("Bearer " + token, topicId).enqueue(callback);
     }
+
     public void deleteVocabulary(String id, Callback<ApiResponse> callback) {
         apiService.deleteVocabulary(id).enqueue(callback);
     }
