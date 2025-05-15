@@ -59,7 +59,9 @@ public class TopicAdapter extends BaseAdapter {
 
         Map<String, Integer> topicImageMap = new HashMap<>();
         topicImageMap.put("Sport", R.drawable.sport);
-        topicImageMap.put("Enviroment", R.drawable.enviroment);
+        topicImageMap.put("Environment", R.drawable.enviroment);
+        topicImageMap.put("Job", R.drawable.job);
+        topicImageMap.put("Animal", R.drawable.animal);
         topicImageMap.put("", R.drawable.default_topic);
         String topicName = topic.getTopic() != null ? topic.getTopic() : "";
         int imageResId = topicImageMap.getOrDefault(topicName, R.drawable.default_topic);

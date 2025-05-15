@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.example.apphoctienganh.R;
 import com.example.apphoctienganh.model.Vocabulary;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +61,26 @@ public class VocabularyAdapter extends BaseAdapter {
 
         //Thêm ảnh ở đây
         Map<String, Integer> imageMap = new HashMap<>();
-        imageMap.put("soccer", R.drawable.sport);
+        imageMap.put("soccer", R.drawable.soccer);
+        imageMap.put("badminton", R.drawable.badminton);
+        imageMap.put("volleyball", R.drawable.volleyball);
+        imageMap.put("tennis", R.drawable.tennis);
+        imageMap.put("basketball", R.drawable.basketball);
+        imageMap.put("it engineer", R.drawable.it);
+        imageMap.put("architect", R.drawable.architect);
+        imageMap.put("chef", R.drawable.chef);
+        imageMap.put("teacher", R.drawable.teacher);
+        imageMap.put("bartender", R.drawable.bartender);
+        imageMap.put("lion", R.drawable.lion);
+        imageMap.put("tiger", R.drawable.tiger);
+        imageMap.put("horse", R.drawable.horse);
+        imageMap.put("cat", R.drawable.cat);
+        imageMap.put("dog", R.drawable.dog);
+        imageMap.put("pollution", R.drawable.pollution);
+        imageMap.put("forest", R.drawable.forest);
+        imageMap.put("water", R.drawable.water);
+        imageMap.put("soil", R.drawable.soil);
+        imageMap.put("emissions", R.drawable.emissions);
 
         String word = vocabulary.getImage();
         if (word != null && !word.isEmpty() && imageMap.containsKey(word.toLowerCase())) {
