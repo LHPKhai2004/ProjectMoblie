@@ -21,6 +21,10 @@ public class VocabularyApi {
     }
 
     public void getVocabulariesByTopic(String token, String topicId, Callback<VocabularyListResponse> callback) {
+        if (token == null || token.trim().isEmpty()) {
+            callback.onFailure(null, new IllegalArgumentException("Token is null or empty"));
+            return;
+        }
         apiService.getVocabularyList("Bearer " + token, topicId).enqueue(callback);
     }
 

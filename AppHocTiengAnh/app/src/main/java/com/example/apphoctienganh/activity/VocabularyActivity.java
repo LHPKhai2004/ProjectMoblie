@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -50,14 +51,14 @@ public class VocabularyActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
-        String topicId = intent.getStringExtra("topicId"); // Nhận TopicId
-        String topicName = intent.getStringExtra("topicName"); // Nhận tên chủ đề
+        String topicId = intent.getStringExtra("topicId");
+        String topicName = intent.getStringExtra("topicName");
         toolbar.setTitle("Chủ đề: " + topicName);
 
         vocabularyApi = new VocabularyApi();
         list = new ArrayList<>();
-        if (topicId != null) {
-            loadVocabularies(token, topicId); // Sử dụng TopicId để gọi API
+        if (topicId != null && !topicId.trim().isEmpty()) {
+            loadVocabularies(token, topicId);
         } else {
             Toast.makeText(this, "Không tìm thấy chủ đề.", Toast.LENGTH_SHORT).show();
             navigateToTopicActivity();
@@ -68,22 +69,27 @@ public class VocabularyActivity extends AppCompatActivity {
         vocabularyApi.getVocabulariesByTopic(token, topicId, new Callback<VocabularyListResponse>() {
             @Override
             public void onResponse(Call<VocabularyListResponse> call, Response<VocabularyListResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
-                    list = response.body().getData();
-                    if (list != null && !list.isEmpty()) {
-                        adapter = new VocabularyAdapter(VocabularyActivity.this, list);
-                        listView.setAdapter(adapter);
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().isResult()) {
+                        list = response.body().getData();
+                        if (list != null && !list.isEmpty()) {
+                            adapter = new VocabularyAdapter(VocabularyActivity.this, list);
+                            listView.setAdapter(adapter);
+                        } else {
+                            Toast.makeText(VocabularyActivity.this, "Không có từ vựng nào cho chủ đề này.", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(VocabularyActivity.this, "Không có từ vựng nào cho chủ đề này.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(VocabularyActivity.this, "Không thể tải từ vựng.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(VocabularyActivity.this, "Không thể tải từ vựng.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(VocabularyActivity.this, "Phản hồi không thành công: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<VocabularyListResponse> call, Throwable t) {
                 Toast.makeText(VocabularyActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("API_ERROR", "Error: " + t.getMessage(), t);
             }
         });
     }
