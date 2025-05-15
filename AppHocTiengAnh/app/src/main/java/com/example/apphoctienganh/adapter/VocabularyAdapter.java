@@ -66,7 +66,7 @@ public class VocabularyAdapter extends BaseAdapter {
         imageMap.put("volleyball", R.drawable.volleyball);
         imageMap.put("tennis", R.drawable.tennis);
         imageMap.put("basketball", R.drawable.basketball);
-        imageMap.put("it engineer", R.drawable.it);
+        imageMap.put("programmer", R.drawable.it);
         imageMap.put("architect", R.drawable.architect);
         imageMap.put("chef", R.drawable.chef);
         imageMap.put("teacher", R.drawable.teacher);
