@@ -1,7 +1,6 @@
 package com.example.apphoctienganh.api;
 
 import com.example.apphoctienganh.model.ApiResponse;
-import com.example.apphoctienganh.model.ForgetPasswordRequest;
 import com.example.apphoctienganh.model.Question;
 import com.example.apphoctienganh.model.QuestionListResponse;
 import com.example.apphoctienganh.model.QuestionResponse;
@@ -27,6 +26,8 @@ import com.example.apphoctienganh.model.OtpRequest;
 import com.example.apphoctienganh.model.OtpResponse;
 import com.example.apphoctienganh.model.RegisterRequest;
 import com.example.apphoctienganh.model.RegisterResponse;
+import com.example.apphoctienganh.model.ForgetPasswordRequest;
+import com.example.apphoctienganh.model.ResetPasswordRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -41,6 +42,7 @@ public interface ApiService {
 
     @POST("v1/api/auth/login")
     Call<LoginResponse> loginUser(@Body LoginRequest request);
+
     @PUT("v1/api/question/update")
     Call<ApiResponse> updateQuestion(@Body Question question);
 
@@ -69,8 +71,8 @@ public interface ApiService {
     @POST("v1/api/user-point/create")
     Call<ApiResponse> createUserPoint(@Header("Authorization") String token, @Body UserPoint userPoint);
 
-//    @POST("v1/api/auth/reset-password")
-//    Call<ApiResponse> resetPassword(@Header("Authorization") String token, @Body ResetPasswordRequest request);
+    @POST("v1/api/auth/reset-password")
+    Call<ApiResponse> resetPassword(@Header("Authorization") String token, @Body ResetPasswordRequest request);
 
     @GET("v1/api/question/get/{id}")
     Call<QuestionResponse> getQuestion(@Header("Authorization") String token, @Path("id") String id);

@@ -19,6 +19,9 @@ import com.example.apphoctienganh.api.RetrofitClient;
 import com.example.apphoctienganh.model.LoginRequest;
 import com.example.apphoctienganh.model.LoginResponse;
 import com.example.apphoctienganh.model.ForgetPasswordRequest;
+import com.example.apphoctienganh.model.OtpRequest;
+import com.example.apphoctienganh.model.OtpResponse;
+import com.example.apphoctienganh.model.ResetPasswordRequest;
 import com.example.apphoctienganh.model.ApiResponse;
 
 import java.io.IOException;
@@ -141,13 +144,13 @@ public class LoginActivity extends AppCompatActivity {
     private void showForgotPasswordDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.activity_forgot, null);
+        View dialogView = inflater.inflate(R.layout.activity_forgot_email, null);
         builder.setView(dialogView);
 
         EditText emailEditText = dialogView.findViewById(R.id.editTextEmail);
-        Button resetButton = dialogView.findViewById(R.id.buttonResetPassword);
+        Button sendOtpButton = dialogView.findViewById(R.id.buttonSendOtp);
 
-        resetButton.setOnClickListener(v -> {
+        sendOtpButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             if (email.isEmpty()) {
                 emailEditText.setError("Vui lòng nhập email");
@@ -158,11 +161,152 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            resetButton.setEnabled(false); // Prevent multiple clicks
+            sendOtpButton.setEnabled(false);
 
             ForgetPasswordRequest request = new ForgetPasswordRequest(email);
             ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
             Call<ApiResponse> call = apiService.forgetPassword(request);
+
+            call.enqueue(new Callback<ApiResponse>() {
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    sendOtpButton.setEnabled(true);
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse apiResponse = response.body();
+                        if (apiResponse.isResult()) {
+                            Toast.makeText(LoginActivity.this, apiResponse.getMessage(), Toast.LENGTH_LONG).show();
+                            // Close the dialog
+                            ((AlertDialog) v.getTag()).dismiss();
+                            // Proceed to OTP verification
+                            showOtpVerificationDialog(email);
+                        } else {
+                            Toast.makeText(LoginActivity.this, apiResponse.getMessage() != null ? apiResponse.getMessage() : "Yêu cầu thất bại", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String errorMessage = "Lỗi server (HTTP " + response.code() + ")";
+                        if (response.errorBody() != null) {
+                            try {
+                                errorMessage += ": " + response.errorBody().string();
+                            } catch (IOException e) {
+                                errorMessage += ": Không thể đọc nội dung lỗi";
+                            }
+                        }
+                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    sendOtpButton.setEnabled(true);
+                    Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        sendOtpButton.setTag(alertDialog);
+    }
+
+    private void showOtpVerificationDialog(String email) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.activity_verify_otp, null);
+        builder.setView(dialogView);
+
+        EditText otpEditText = dialogView.findViewById(R.id.editTextOtp);
+        Button verifyButton = dialogView.findViewById(R.id.buttonVerifyOtp);
+
+        verifyButton.setOnClickListener(v -> {
+            String otp = otpEditText.getText().toString().trim();
+            if (otp.isEmpty()) {
+                otpEditText.setError("Vui lòng nhập mã OTP");
+                return;
+            }
+
+            verifyButton.setEnabled(false);
+
+            OtpRequest request = new OtpRequest(email, otp);
+            ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+            Call<OtpResponse> call = apiService.verifyOtp(request);
+
+            call.enqueue(new Callback<OtpResponse>() {
+                @Override
+                public void onResponse(Call<OtpResponse> call, Response<OtpResponse> response) {
+                    verifyButton.setEnabled(true);
+                    if (response.isSuccessful() && response.body() != null) {
+                        OtpResponse otpResponse = response.body();
+                        if (otpResponse.isResult()) {
+                            Toast.makeText(LoginActivity.this, otpResponse.getMessage(), Toast.LENGTH_LONG).show();
+                            // Close the dialog
+                            ((AlertDialog) v.getTag()).dismiss();
+                            // Proceed to reset password
+                            showResetPasswordDialog(email);
+                        } else {
+                            Toast.makeText(LoginActivity.this, otpResponse.getMessage() != null ? otpResponse.getMessage() : "Xác minh thất bại", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String errorMessage = "Lỗi server (HTTP " + response.code() + ")";
+                        if (response.errorBody() != null) {
+                            try {
+                                errorMessage += ": " + response.errorBody().string();
+                            } catch (IOException e) {
+                                errorMessage += ": Không thể đọc nội dung lỗi";
+                            }
+                        }
+                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<OtpResponse> call, Throwable t) {
+                    verifyButton.setEnabled(true);
+                    Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        verifyButton.setTag(alertDialog);
+    }
+
+    private void showResetPasswordDialog(String email) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.activity_reset_password, null);
+        builder.setView(dialogView);
+
+        EditText newPasswordEditText = dialogView.findViewById(R.id.editTextNewPassword);
+        EditText confirmPasswordEditText = dialogView.findViewById(R.id.editTextConfirmPassword);
+        Button resetButton = dialogView.findViewById(R.id.buttonResetPassword);
+
+        resetButton.setOnClickListener(v -> {
+            String password = newPasswordEditText.getText().toString().trim();
+            String confirmPassword = confirmPasswordEditText.getText().toString().trim();
+
+            // Validate password
+            if (password.isEmpty()) {
+                newPasswordEditText.setError("Vui lòng nhập mật khẩu mới");
+                return;
+            }
+            if (password.length() < 8) {
+                newPasswordEditText.setError("Mật khẩu phải có ít nhất 8 ký tự");
+                return;
+            }
+            if (!password.equals(confirmPassword)) {
+                confirmPasswordEditText.setError("Mật khẩu không khớp");
+                return;
+            }
+
+            resetButton.setEnabled(false);
+
+            ResetPasswordRequest request = new ResetPasswordRequest(email, password);
+            ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+            // Note: API image does not show a token, so we call without Authorization header
+            Call<ApiResponse> call = apiService.resetPassword(null, request);
 
             call.enqueue(new Callback<ApiResponse>() {
                 @Override
@@ -175,7 +319,7 @@ public class LoginActivity extends AppCompatActivity {
                             // Close the dialog
                             ((AlertDialog) v.getTag()).dismiss();
                         } else {
-                            Toast.makeText(LoginActivity.this, apiResponse.getMessage() != null ? apiResponse.getMessage() : "Yêu cầu thất bại", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, apiResponse.getMessage() != null ? apiResponse.getMessage() : "Đặt lại mật khẩu thất bại", Toast.LENGTH_LONG).show();
                         }
                     } else {
                         String errorMessage = "Lỗi server (HTTP " + response.code() + ")";
@@ -201,7 +345,6 @@ public class LoginActivity extends AppCompatActivity {
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-        // Store dialog reference for resetButton to dismiss if needed
         resetButton.setTag(alertDialog);
     }
 
