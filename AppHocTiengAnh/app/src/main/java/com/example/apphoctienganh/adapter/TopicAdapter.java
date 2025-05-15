@@ -58,11 +58,11 @@ public class TopicAdapter extends BaseAdapter {
         // Set image resource based on topic name (since imageView from API is a string)
         int imageResId;
         switch (topic.getTopic() != null ? topic.getTopic() : "") {
-            case "SPORT":
+            case "Sport":
                 imageResId = R.drawable.sport;
                 break;
-            case "CAREER":
-                imageResId = R.drawable.education;
+            case "Enviroment":
+                imageResId = R.drawable.enviroment;
                 break;
             default:
                 imageResId = R.drawable.default_topic;
