@@ -3,6 +3,9 @@ package com.example.apphoctienganh.model;
 import com.google.gson.annotations.SerializedName;
 
 public class UserPoint {
+    @SerializedName("id")
+    private String id;
+
     @SerializedName("point")
     private int point;
 
@@ -17,7 +20,16 @@ public class UserPoint {
         this.time = time;
         this.user = user;
     }
+
     public UserPoint() {}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public int getPoint() {
         return point;
@@ -64,8 +76,12 @@ public class UserPoint {
         @SerializedName("username")
         private String username;
 
-        public Account(String username) {
+        @SerializedName("email")
+        private String email;
+
+        public Account(String username, String email) {
             this.username = username;
+            this.email = email;
         }
 
         public String getUsername() {
@@ -74,6 +90,14 @@ public class UserPoint {
 
         public void setUsername(String username) {
             this.username = username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
         }
     }
 }

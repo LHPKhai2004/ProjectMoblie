@@ -9,11 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.apphoctienganh.R;
-import com.example.apphoctienganh.activity.LeaderBoardActivity;
-import com.example.apphoctienganh.activity.ListeningActivity;
-import com.example.apphoctienganh.activity.LoginActivity;
-import com.example.apphoctienganh.activity.MultipleChoiceActivity;
-import com.example.apphoctienganh.activity.TopicActivity;
 
 public class LayoutActivity extends AppCompatActivity {
     private TextView tvUsername;
@@ -36,7 +31,6 @@ public class LayoutActivity extends AppCompatActivity {
         imgQuestionQuick = findViewById(R.id.questionQuick);
         imgLeaderBoard = findViewById(R.id.leaderBoard);
         imgVocabulary = findViewById(R.id.image_vocabulary);
-        imgGrammar = findViewById(R.id.grammar);
         imgListening = findViewById(R.id.listening);
     }
 

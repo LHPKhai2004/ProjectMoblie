@@ -11,9 +11,11 @@ import android.widget.TextView;
 import com.example.apphoctienganh.R;
 import com.example.apphoctienganh.model.UserPoint;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class LeaderBoardAdapter extends BaseAdapter {
@@ -100,16 +102,18 @@ public class LeaderBoardAdapter extends BaseAdapter {
 
         // Format time
         String time = userPoint.getTime();
-        if (time != null && time.contains(":")) {
-            String[] timeParts = time.split(":");
+        if (time != null && !time.isEmpty()) {
             try {
-                String formattedTime = String.format("%02d:%02d", Integer.parseInt(timeParts[0]), Integer.parseInt(timeParts[1]));
-                txtTime.setText("Thời gian: " + formattedTime);
-            } catch (NumberFormatException e) {
-                txtTime.setText("Thời gian: N/A");
+                SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = inputFormat.parse(time);
+                String formattedTime = outputFormat.format(date);
+                txtTime.setText("Ngày: " + formattedTime);
+            } catch (Exception e) {
+                txtTime.setText("Ngày: N/A");
             }
         } else {
-            txtTime.setText("Thời gian: N/A");
+            txtTime.setText("Ngày: N/A");
         }
 
         return itemView;
