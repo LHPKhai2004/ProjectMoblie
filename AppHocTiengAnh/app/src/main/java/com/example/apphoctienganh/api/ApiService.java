@@ -11,15 +11,6 @@ import com.example.apphoctienganh.model.UserPointListResponse;
 import com.example.apphoctienganh.model.UserResponse;
 import com.example.apphoctienganh.model.Vocabulary;
 import com.example.apphoctienganh.model.VocabularyListResponse;
-
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.DELETE;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.POST;
-import retrofit2.http.PUT;
-import retrofit2.http.Path;
 import com.example.apphoctienganh.model.LoginRequest;
 import com.example.apphoctienganh.model.LoginResponse;
 import com.example.apphoctienganh.model.OtpRequest;
@@ -31,7 +22,12 @@ import com.example.apphoctienganh.model.ResetPasswordRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 
 public interface ApiService {
     @POST("v1/api/auth/register")
@@ -67,7 +63,7 @@ public interface ApiService {
     @POST("v1/api/topic/create")
     Call<ApiResponse> createTopic(@Body Topic topic);
 
-    // **API yêu cầu token**
+    // API yêu cầu token
     @POST("v1/api/user-point/create")
     Call<ApiResponse> createUserPoint(@Header("Authorization") String token, @Body UserPoint userPoint);
 

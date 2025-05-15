@@ -1,66 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.ListeningActivity">
+    android:padding="16dp"
+    android:background="#F5F5F5">
 
+    <!-- Header -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="16sp"
-        android:textColor="@color/colorAccent2"
-        android:text="Luyện Nghe Tiếng Anh"/>
+        android:text="Luyện Nghe Tiếng Anh"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#26A69A"
+        android:paddingBottom="16dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="45dp"
-            android:id="@+id/start"
-            android:background="@drawable/stop2"/>
-
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/stop"
-            android:visibility="gone"
-            android:background="@drawable/start"/>
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
-
+    <!-- Media Controls -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingBottom="12dp">
+
+        <Button
+            android:id="@+id/start"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/stop2" />
+
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:visibility="gone"
+            android:background="@drawable/start" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"/>
+    </LinearLayout>
+
+    <!-- Time Display -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="12dp">
 
         <TextView
             android:id="@+id/textViewStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0:00"
-
             android:textSize="14sp"
-            android:layout_marginStart="100dp"/>
+            android:textColor="#555"
+            android:layout_marginStart="16dp" />
 
         <View
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="#BDBDBD"
+            android:layout_marginHorizontal="8dp" />
 
         <TextView
             android:id="@+id/textViewEnd"
@@ -68,60 +77,72 @@
             android:layout_height="wrap_content"
             android:text="0:00"
             android:textSize="14sp"
-            android:layout_marginEnd="16dp"/>
-
+            android:textColor="#555"
+            android:layout_marginEnd="16dp" />
     </LinearLayout>
+
+    <!-- Listening Image -->
     <ImageView
-        android:layout_width="match_parent"
-        android:src="@drawable/sport"
         android:id="@+id/image"
-        android:layout_height="wrap_content"></ImageView>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/sport"
+        android:scaleType="fitCenter"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Answer Choices -->
     <RadioGroup
         android:id="@+id/answerRadioGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="16dp">
 
         <RadioButton
             android:id="@+id/aRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomRadioButton"
             android:text="A" />
 
         <RadioButton
             android:id="@+id/bRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomRadioButton"
             android:text="B" />
 
         <RadioButton
             android:id="@+id/cRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomRadioButton"
             android:text="C" />
 
         <RadioButton
             android:id="@+id/dRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomRadioButton"
             android:text="D" />
-
     </RadioGroup>
 
+    <!-- Navigation Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
             android:id="@+id/out"
-            android:text="Thoát"></Button>
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:text="Thoát"
+            android:backgroundTint="#F44336"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="12dp" />
+
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/next"
-            android:layout_marginStart="50dp"
-            android:text="Câu tiếp theo"></Button>
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:text="Câu tiếp theo"
+            android:backgroundTint="#26A69A"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
-</androidx.appcompat.widget.LinearLayoutCompat>
+
+</LinearLayout>

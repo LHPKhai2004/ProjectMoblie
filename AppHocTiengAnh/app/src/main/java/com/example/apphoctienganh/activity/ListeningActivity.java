@@ -1,7 +1,5 @@
 package com.example.apphoctienganh.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -14,158 +12,108 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.example.apphoctienganh.R;
 import com.squareup.picasso.Picasso;
-
 import java.text.SimpleDateFormat;
 
 public class ListeningActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
-    private Button startButton;
-    private Button stopButton;
-    private TextView textViewStart;
-    private TextView textViewEnd;
+    private Button btnStart, btnStop, btnNext, btnOut;
+    private TextView tvStart, tvEnd;
     private SeekBar seekBar;
-    private Button nextButton;
-    private Button outButton;
-    private ImageView imageView;
-    private RadioButton aRadioButton;
-    private RadioButton bRadioButton;
-    private RadioButton cRadioButton;
-    private RadioButton dRadioButton;
-    private int count = 0;
-    private int check = 0;
+    private ImageView ivImage;
+    private RadioButton rbA, rbB, rbC, rbD;
+    private int count = 0, check = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listening);
-        initializeViews();
-        initializeMediaPlayer();
-        setupStartButton();
-        setupSeekBar();
-        setupStopButton();
-        setupNextButton();
-        setupAnswerRadioGroup();
-        setUpOut();
+        initViews();
+        initMediaPlayer();
+        setupListeners();
     }
-    public void setUpOut(){
-        outButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ListeningActivity.this, LayoutActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-    private void initializeViews() {
-        startButton = findViewById(R.id.start);
-        stopButton = findViewById(R.id.stop);
-        textViewStart = findViewById(R.id.textViewStart);
-        textViewEnd = findViewById(R.id.textViewEnd);
+
+    private void initViews() {
+        btnStart = findViewById(R.id.start);
+        btnStop = findViewById(R.id.stop);
+        tvStart = findViewById(R.id.textViewStart);
+        tvEnd = findViewById(R.id.textViewEnd);
         seekBar = findViewById(R.id.seekBar);
-        nextButton = findViewById(R.id.next);
-        outButton = findViewById(R.id.out);
-        imageView = findViewById(R.id.image);
-        aRadioButton = findViewById(R.id.aRadioButton);
-        bRadioButton = findViewById(R.id.bRadioButton);
-        cRadioButton = findViewById(R.id.cRadioButton);
-        dRadioButton = findViewById(R.id.dRadioButton);
-        Picasso.with(ListeningActivity.this)
-                .load("https://study4.com/media/tez_media/img/ets_toeic_2018_test_3_ets_toeic_2018_test_3_1.png")
-                .into(imageView);
-    }
-    private void setupAnswerRadioGroup() {
-        RadioGroup answerRadioGroup = findViewById(R.id.answerRadioGroup);
-        answerRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                if (checkedId == R.id.aRadioButton && check == 0) {
-                    Toast.makeText(ListeningActivity.this, "Đáp án đúng", Toast.LENGTH_SHORT).show();
-                }
-                else if(checkedId == R.id.cRadioButton && check > 0){
-                    Toast.makeText(ListeningActivity.this, "Đáp án đúng", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Toast.makeText(ListeningActivity.this, "Đáp án sai", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
+        btnNext = findViewById(R.id.next);
+        btnOut = findViewById(R.id.out);
+        ivImage = findViewById(R.id.image);
+        rbA = findViewById(R.id.aRadioButton);
+        rbB = findViewById(R.id.bRadioButton);
+        rbC = findViewById(R.id.cRadioButton);
+        rbD = findViewById(R.id.dRadioButton);
+        Picasso.with(this).load("https://study4.com/media/tez_media/img/ets_toeic_2018_test_3_ets_toeic_2018_test_3_1.png").into(ivImage);
     }
 
-    private void initializeMediaPlayer() {
+    private void initMediaPlayer() {
         mediaPlayer = MediaPlayer.create(this, R.raw.ets_toeic_2018_test_3_1);
     }
 
-    private void setupStartButton() {
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mediaPlayer.start();
-                startButton.setVisibility(View.GONE);
-                stopButton.setVisibility(View.VISIBLE);
-                setTimeTotal();
-                updateTime();
+    private void setupListeners() {
+        btnStart.setOnClickListener(v -> {
+            mediaPlayer.start();
+            btnStart.setVisibility(View.GONE);
+            btnStop.setVisibility(View.VISIBLE);
+            setTimeTotal();
+            updateTime();
+        });
+
+        btnStop.setOnClickListener(v -> {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                btnStart.setVisibility(View.VISIBLE);
+                btnStop.setVisibility(View.GONE);
             }
         });
-    }
 
-    private void setupSeekBar() {
+        btnNext.setOnClickListener(v -> {
+            if (mediaPlayer != null) mediaPlayer.release();
+            Picasso.with(this).load("https://study4.com/media/tez_media/img/ets_toeic_2018_test_3_ets_toeic_2018_test_3_3.png").into(ivImage);
+            mediaPlayer = MediaPlayer.create(this, R.raw.ets_toeic_2018_test_3_3);
+            setTimeTotal();
+            count++;
+            check++;
+            if (count >= 2) {
+                Toast.makeText(this, "Bộ câu hỏi đã hết, vui lòng đợi cập nhật", Toast.LENGTH_SHORT).show();
+            }
+            btnStart.setVisibility(View.VISIBLE);
+            btnStop.setVisibility(View.GONE);
+        });
+
+        btnOut.setOnClickListener(v -> startActivity(new Intent(this, LayoutActivity.class)));
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {}
-
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mediaPlayer.seekTo(seekBar.getProgress());
             }
         });
-    }
 
-    private void setupStopButton() {
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                    startButton.setVisibility(View.VISIBLE);
-                    stopButton.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    private void setupNextButton() {
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-                }
-                Picasso.with(ListeningActivity.this)
-                        .load("https://study4.com/media/tez_media/img/ets_toeic_2018_test_3_ets_toeic_2018_test_3_3.png")
-                        .into(imageView);
-
-                mediaPlayer = MediaPlayer.create(ListeningActivity.this, R.raw.ets_toeic_2018_test_3_3);
-                setTimeTotal();
-                count++;
-                check++;
-                if(count>=2){
-                    Toast.makeText(ListeningActivity.this, "Bộ câu hỏi đã hết đợi chúng tôi cập nhật thêm", Toast.LENGTH_SHORT).show();
-                }
-                startButton.setVisibility(View.VISIBLE);
-                stopButton.setVisibility(View.GONE);
+        RadioGroup rgAnswers = findViewById(R.id.answerRadioGroup);
+        rgAnswers.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.aRadioButton && check == 0) {
+                Toast.makeText(this, "Đáp án đúng", Toast.LENGTH_SHORT).show();
+            } else if (checkedId == R.id.cRadioButton && check > 0) {
+                Toast.makeText(this, "Đáp án đúng", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Đáp án sai", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setTimeTotal() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
-        textViewEnd.setText(dateFormat.format(mediaPlayer.getDuration()) +"");
+        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+        tvEnd.setText(sdf.format(mediaPlayer.getDuration()));
         seekBar.setMax(mediaPlayer.getDuration());
     }
 
@@ -174,12 +122,12 @@ public class ListeningActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
-                textViewStart.setText(simpleDateFormat.format(mediaPlayer.getCurrentPosition()));
+                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+                tvStart.setText(sdf.format(mediaPlayer.getCurrentPosition()));
                 seekBar.setProgress(mediaPlayer.getCurrentPosition());
-                handler.postDelayed(this,500);
+                handler.postDelayed(this, 500);
             }
-        },100);
+        }, 100);
     }
 
     @Override

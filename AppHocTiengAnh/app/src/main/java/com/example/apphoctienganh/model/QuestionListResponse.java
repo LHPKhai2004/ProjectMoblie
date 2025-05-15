@@ -1,10 +1,16 @@
 package com.example.apphoctienganh.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class QuestionListResponse {
+    @SerializedName("result")
     private boolean result;
+
+    @SerializedName("data")
     private Data data;
+
+    @SerializedName("message")
     private String message;
 
     public boolean isResult() {
@@ -32,8 +38,13 @@ public class QuestionListResponse {
     }
 
     public static class Data {
+        @SerializedName("content")
         private List<Question> content;
+
+        @SerializedName("totalElements")
         private int totalElements;
+
+        @SerializedName("totalPages")
         private int totalPages;
 
         public List<Question> getContent() {

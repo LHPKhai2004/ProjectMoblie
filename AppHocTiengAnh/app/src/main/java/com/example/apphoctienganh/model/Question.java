@@ -1,29 +1,26 @@
 package com.example.apphoctienganh.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Question {
-    private int id;
+    @SerializedName("id")
+    private String id;
+
+    @SerializedName("question")
     private String question;
+
+    @SerializedName("answer")
     private String answer;
-    private String allchoice;
 
-    public Question(int id, String question, String answer, String allchoice) {
-        this.id = id;
-        this.question = question;
-        this.answer = answer;
-        this.allchoice = allchoice;
-    }
-    public Question( String question, String answer, String allchoice) {
-        this.question = question;
-        this.answer = answer;
-        this.allchoice = allchoice;
-    }
-    public Question(){}
+    @SerializedName("allChoice")
+    private String allChoice;
 
-    public int getId() {
+    // Getters and setters
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -43,11 +40,11 @@ public class Question {
         this.answer = answer;
     }
 
-    public String getAllchoice() {
-        return allchoice;
+    public String getAllChoice() {
+        return allChoice;
     }
 
-    public void setAllchoice(String allchoice) {
-        this.allchoice = allchoice;
+    public void setAllChoice(String allChoice) {
+        this.allChoice = allChoice;
     }
 }

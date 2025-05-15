@@ -13,7 +13,9 @@ import com.example.apphoctienganh.model.Vocabulary;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VocabularyAdapter extends BaseAdapter {
     private List<Vocabulary> list;
@@ -56,15 +58,15 @@ public class VocabularyAdapter extends BaseAdapter {
         Vocabulary vocabulary = list.get(position);
         // Safely set vocabulary data
         textVocabulary.setText("Từ vựng: " + (vocabulary.getWord() != null ? vocabulary.getWord() : "N/A"));
-        textVocabularyAnswer.setText("Đáp án: " + (vocabulary.getAnswer() != null ? vocabulary.getAnswer() : "N/A"));
+        textVocabularyAnswer.setText("Nghĩa: " + (vocabulary.getAnswer() != null ? vocabulary.getAnswer() : "N/A"));
 
-        // Load image with Picasso
-        if (vocabulary.getImage() != null && !vocabulary.getImage().isEmpty()) {
-            Picasso.with(context)
-                    .load(vocabulary.getImage())
-                    .placeholder(R.drawable.placeholder_image) // Add a placeholder image in res/drawable
-                    .error(R.drawable.error_image) // Add an error image in res/drawable
-                    .into(image);
+        //Thêm ảnh ở đây
+        Map<String, Integer> imageMap = new HashMap<>();
+        imageMap.put("soccer", R.drawable.sport);
+
+        String word = vocabulary.getImage();
+        if (word != null && !word.isEmpty() && imageMap.containsKey(word.toLowerCase())) {
+            image.setImageResource(imageMap.get(word.toLowerCase()));
         } else {
             image.setImageResource(R.drawable.placeholder_image);
         }

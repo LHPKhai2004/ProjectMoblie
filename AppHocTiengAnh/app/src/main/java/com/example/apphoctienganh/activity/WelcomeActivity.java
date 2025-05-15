@@ -5,29 +5,25 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.apphoctienganh.R;
 import com.example.apphoctienganh.support.ProgressBarAnimation;
 
 public class WelcomeActivity extends AppCompatActivity {
     private ProgressBar progressBar;
-    private TextView textView;
+    private TextView tvProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-
         progressBar = findViewById(R.id.progressBar);
-        textView = findViewById(R.id.txt_progress);
-
+        tvProgress = findViewById(R.id.txt_progress);
         startProgressAnimation();
     }
 
     private void startProgressAnimation() {
-        ProgressBarAnimation anim = new ProgressBarAnimation(progressBar, textView, 0f, 100f);
+        ProgressBarAnimation anim = new ProgressBarAnimation(progressBar, tvProgress, 0f, 100f);
         anim.setDuration(3000);
         progressBar.setAnimation(anim);
         new LoadDataTask().execute();

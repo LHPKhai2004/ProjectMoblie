@@ -8,7 +8,6 @@
     android:padding="16dp"
     android:background="@drawable/background_orang">
 
-    <!-- ScrollView to make content scrollable -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,19 +18,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header Section -->
+            <!-- Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
                 android:paddingBottom="16dp">
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
                     android:src="@drawable/eng"
                     android:contentDescription="Logo App"
                     android:layout_marginBottom="8dp"/>
+
                 <TextView
                     android:id="@+id/username"
                     android:layout_width="wrap_content"
@@ -41,15 +42,14 @@
                     android:textStyle="bold"/>
             </LinearLayout>
 
-            <!-- Feature Section -->
+            <!-- Grid of Features -->
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="2"
-                android:rowCount="2"
                 android:layout_marginTop="20dp">
 
-                <!-- Feature 1 -->
+                <!-- Trắc nghiệm từ vựng -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Feature 2 -->
+                <!-- Học từ vựng -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -109,37 +109,7 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Feature 3 -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal"
-                        android:padding="8dp">
-                        <ImageView
-                            android:id="@+id/grammar"
-                            android:layout_width="match_parent"
-                            android:layout_height="100dp"
-                            android:src="@drawable/gramar"
-                            android:contentDescription="Học ngữ pháp"
-                            android:scaleType="centerInside"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ngữ pháp"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Feature 4 -->
+                <!-- Luyện Nghe -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -168,37 +138,38 @@
                             android:textStyle="bold"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
-            </GridLayout>
 
-            <!-- Feature 5 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <!-- Bảng xếp hạng -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:padding="8dp">
-                    <ImageView
-                        android:id="@+id/leaderBoard"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:src="@drawable/leaderboard"
-                        android:contentDescription="Bảng xếp hạng"
-                        android:scaleType="centerInside"/>
-                    <TextView
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bảng xếp hạng"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:padding="8dp">
+                        <ImageView
+                            android:id="@+id/leaderBoard"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:src="@drawable/leaderboard"
+                            android:contentDescription="Bảng xếp hạng"
+                            android:scaleType="centerInside"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bảng xếp hạng"
+                            android:textSize="16sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
+            </GridLayout>
         </LinearLayout>
     </ScrollView>
 </androidx.appcompat.widget.LinearLayoutCompat>
