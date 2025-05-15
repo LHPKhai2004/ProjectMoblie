@@ -50,8 +50,7 @@
         android:drawablePadding="10dp"
         android:text="Question: 1/x"
         android:textColor="#26A69A"
-        android:textSize="20sp"
-        android:drawableTint="#26A69A" />
+        android:textSize="20sp" />
 
     <!-- Question Section -->
     <LinearLayout
