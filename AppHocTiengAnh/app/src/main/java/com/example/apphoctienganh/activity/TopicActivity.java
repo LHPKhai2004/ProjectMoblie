@@ -17,7 +17,6 @@ import com.example.apphoctienganh.adapter.TopicAdapter;
 import com.example.apphoctienganh.database.TopicApi;
 import com.example.apphoctienganh.model.Topic;
 import com.example.apphoctienganh.model.TopicListResponse;
-import com.example.apphoctienganh.model.TopicModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ import retrofit2.Response;
 public class TopicActivity extends AppCompatActivity {
     private ListView listView;
     private TopicAdapter adapter;
-    private List<TopicModel> list;
+    private List<Topic> list;
     private TopicApi topicApi;
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "UserPrefs";
@@ -40,11 +39,11 @@ public class TopicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_topic);
 
-        // Khởi tạo SharedPreferences
+        // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String token = sharedPreferences.getString(KEY_TOKEN, null);
         if (token == null) {
-            Toast.makeText(this, "Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please log in again.", Toast.LENGTH_LONG).show();
             navigateToLogin();
             return;
         }
@@ -59,51 +58,38 @@ public class TopicActivity extends AppCompatActivity {
     }
 
     private void setTopics(String token) {
-        topicApi.getTopicList(token, new Callback<TopicListResponse>() {
+        topicApi.getTopicList("Bearer " + token, new Callback<TopicListResponse>() {
             @Override
             public void onResponse(Call<TopicListResponse> call, Response<TopicListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isResult()) {
                     List<Topic> topics = response.body().getData();
                     if (topics != null && !topics.isEmpty()) {
+                        list.clear();
                         for (Topic topic : topics) {
-                            int imageResId = getImageResourceForTopic(topic.getTopic());
-                            list.add(new TopicModel(imageResId, topic.getTopic()));
+                            list.add(new Topic(topic.getId(), topic.getImageView(), topic.getTopic()));
                         }
                         adapter = new TopicAdapter(TopicActivity.this, list);
                         listView.setAdapter(adapter);
                     } else {
-                        Toast.makeText(TopicActivity.this, "Không có chủ đề nào.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TopicActivity.this, "No topics available.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(TopicActivity.this, "Không thể tải danh sách chủ đề.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TopicActivity.this, "Failed to load topic list.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<TopicListResponse> call, Throwable t) {
-                Toast.makeText(TopicActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TopicActivity.this, "Connection error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private int getImageResourceForTopic(String topicName) {
-        switch (topicName) {
-            case "Thể thao":
-                return R.drawable.sport;
-            case "Giáo dục":
-                return R.drawable.education;
-            case "Môi trường":
-                return R.drawable.enviroment;
-            default:
-                return R.drawable.default_topic;
-        }
     }
 
     private void setupListView() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TopicModel selectedTopic = list.get(i);
+                Topic selectedTopic = list.get(i);
                 Intent intent = new Intent(TopicActivity.this, VocabularyActivity.class);
                 intent.putExtra("topic", selectedTopic.getTopic());
                 startActivity(intent);
