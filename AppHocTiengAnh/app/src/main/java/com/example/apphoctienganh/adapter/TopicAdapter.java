@@ -9,16 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.apphoctienganh.R;
-import com.example.apphoctienganh.model.TopicModel;
+import com.example.apphoctienganh.model.Topic;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TopicAdapter extends BaseAdapter {
-    private List<TopicModel> list;
+    private List<Topic> list;
     private Context context;
 
-    public TopicAdapter(Context context, List<TopicModel> list) {
+    public TopicAdapter(Context context, List<Topic> list) {
         this.context = context;
         this.list = new ArrayList<>(list); // Create a copy to avoid modifying the original list
     }
@@ -51,12 +51,23 @@ public class TopicAdapter extends BaseAdapter {
         TextView textTopic = itemView.findViewById(R.id.text_Topic);
         ImageView image = itemView.findViewById(R.id.image_vocabulary);
 
-        TopicModel topicModel = list.get(position);
+        Topic topic = list.get(position);
         // Safely set topic data
-        textTopic.setText("Chủ đề: " + (topicModel.getTopic() != null ? topicModel.getTopic() : "N/A"));
+        textTopic.setText("Topic: " + (topic.getTopic() != null ? topic.getTopic() : "N/A"));
 
-        // Set image resource with fallback
-        int imageResId = topicModel.getImageView() != 0 ? topicModel.getImageView() : R.drawable.default_topic;
+        // Set image resource based on topic name (since imageView from API is a string)
+        int imageResId;
+        switch (topic.getTopic() != null ? topic.getTopic() : "") {
+            case "SPORT":
+                imageResId = R.drawable.sport;
+                break;
+            case "CAREER":
+                imageResId = R.drawable.education;
+                break;
+            default:
+                imageResId = R.drawable.default_topic;
+                break;
+        }
         image.setImageResource(imageResId);
 
         return itemView;
