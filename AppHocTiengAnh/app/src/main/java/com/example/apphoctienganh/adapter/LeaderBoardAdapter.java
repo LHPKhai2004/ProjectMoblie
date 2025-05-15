@@ -108,12 +108,12 @@ public class LeaderBoardAdapter extends BaseAdapter {
                 SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Date date = inputFormat.parse(time);
                 String formattedTime = outputFormat.format(date);
-                txtTime.setText("Ngày: " + formattedTime);
+                txtTime.setText("Ngày làm: " + formattedTime);
             } catch (Exception e) {
-                txtTime.setText("Ngày: N/A");
+                txtTime.setText("Ngày làm: N/A");
             }
         } else {
-            txtTime.setText("Ngày: N/A");
+            txtTime.setText("Ngày làm: N/A");
         }
 
         return itemView;
