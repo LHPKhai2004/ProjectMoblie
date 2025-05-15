@@ -50,21 +50,22 @@ public class VocabularyActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
-        String topic = intent.getStringExtra("topic");
-        toolbar.setTitle("Chủ đề: " + topic);
+        String topicId = intent.getStringExtra("topicId"); // Nhận TopicId
+        String topicName = intent.getStringExtra("topicName"); // Nhận tên chủ đề
+        toolbar.setTitle("Chủ đề: " + topicName);
 
         vocabularyApi = new VocabularyApi();
         list = new ArrayList<>();
-        if (topic != null) {
-            loadVocabularies(token, topic);
+        if (topicId != null) {
+            loadVocabularies(token, topicId); // Sử dụng TopicId để gọi API
         } else {
             Toast.makeText(this, "Không tìm thấy chủ đề.", Toast.LENGTH_SHORT).show();
             navigateToTopicActivity();
         }
     }
 
-    private void loadVocabularies(String token, String topic) {
-        vocabularyApi.getVocabulariesByTopic(token, topic, new Callback<VocabularyListResponse>() {
+    private void loadVocabularies(String token, String topicId) {
+        vocabularyApi.getVocabulariesByTopic(token, topicId, new Callback<VocabularyListResponse>() {
             @Override
             public void onResponse(Call<VocabularyListResponse> call, Response<VocabularyListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isResult()) {

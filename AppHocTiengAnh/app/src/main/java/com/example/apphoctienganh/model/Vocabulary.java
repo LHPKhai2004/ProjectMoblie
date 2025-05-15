@@ -1,25 +1,19 @@
 package com.example.apphoctienganh.model;
+
 public class Vocabulary {
     private String id;
     private String image;
     private String word;
     private String answer;
-    private String topicId;
 
-    public Vocabulary(String id, String image, String word, String answer, String topicId) {
+    public Vocabulary() {
+    }
+
+    public Vocabulary(String id, String image, String word, String answer) {
         this.id = id;
         this.image = image;
         this.word = word;
         this.answer = answer;
-        this.topicId = topicId;
-    }
-
-    public Vocabulary(String words, String image, String answer, String topic) {
-
-        this.image = image;
-        this.word = words;
-        this.answer = answer;
-        this.topicId = topic;
     }
 
     public String getId() {
@@ -52,13 +46,5 @@ public class Vocabulary {
 
     public void setAnswer(String answer) {
         this.answer = answer;
-    }
-
-    public String getTopicId() {
-        return topicId;
-    }
-
-    public void setTopicId(String topicId) {
-        this.topicId = topicId;
     }
 }
